@@ -587,6 +587,7 @@ GameObject:
   - component: {fileID: 1676666881}
   - component: {fileID: 1676666880}
   - component: {fileID: 1676666883}
+  - component: {fileID: 1676666884}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -671,7 +672,7 @@ Animator:
   m_GameObject: {fileID: 1676666876}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: e4cff99bdcba65045bd79a993cb7a7cd, type: 2}
+  m_Controller: {fileID: 9100000, guid: fd07332403f7b0f43b8bbee2d75106e6, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -714,7 +715,7 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.01, y: -0.13879672}
+  m_Offset: {x: -0.01, y: -0.12}
   serializedVersion: 2
   m_Radius: 0.026203305
 --- !u!61 &1676666881
@@ -802,7 +803,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: e0683674a9d6f504bae1d4e5799bc25b, type: 3}
-  m_NotificationBehavior: 0
+  m_NotificationBehavior: 2
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
@@ -813,12 +814,51 @@ MonoBehaviour:
   m_ControlsChangedEvent:
     m_PersistentCalls:
       m_Calls: []
-  m_ActionEvents: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1676666884}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: Walk
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 69f38fb2-be40-4445-a254-3cd378c556b4
+    m_ActionName: Player/Walk[/Keyboard/a,/Keyboard/d,/XInputControllerWindows/leftStick/left,/XInputControllerWindows/leftStick/right]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: d43e5f89-817d-4aea-8356-f60d98c367a2
+    m_ActionName: Player/Run[/Keyboard/leftShift,/XInputControllerWindows/rightTrigger]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 4bc3c0e6-6c49-4ff6-bf87-c7a26884e74e
+    m_ActionName: Player/Jump[/Keyboard/space,/XInputControllerWindows/buttonSouth]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &1676666884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1676666876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9452ec6f397c7e0459c41ac41f0d5a65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 1676666882}
+  animator: {fileID: 1676666879}
+  speed: 3
 --- !u!1 &1693582756
 GameObject:
   m_ObjectHideFlags: 0
