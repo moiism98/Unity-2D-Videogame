@@ -83,20 +83,12 @@ public class PlayerController : MonoBehaviour
     {
         if(IsGrounded()) // when we add this piece of code the little jump stop working, find out what's happening and fix it up!
         {
-            if(jump.performed)
-            {
-                // normal jump
-
+            if(jump.performed) // normal jump
                 rb.velocity = new Vector2(transform.position.x, jumpForce);
-            }
             else
             {   
-                if(jump.canceled)
-                {
-                    // little jump
-
-                    rb.velocity = new Vector2(transform.position.x, rb.velocity.y * .5f);
-                }
+                if(jump.canceled) // little jump
+                    rb.velocity = new Vector2(transform.position.x, rb.velocity.y * .5f); 
             }
 
             animator.SetTrigger("Jump");
@@ -106,22 +98,22 @@ public class PlayerController : MonoBehaviour
     {
         if(crouch.performed) // if we're crouching
         {
-            // we are crouching now
+            isCrouching = !isCrouching; // we are crouching now
 
-            isCrouching = !isCrouching;
-
-            // disable the head collider
-
-            crouchCol.enabled = false;
-
-            // play crouch animation
+            crouchCol.enabled = false; // disable the head collider
         }
         else if(crouch.canceled) // if we do not
         {
             isCrouching = !isCrouching;
+
+            crouchCol.enabled = true;
         }
+
+        // play crouch animation
+
+        animator.SetBool("Crouch", isCrouching);
     }
-    
+
     private bool IsGrounded()
     {
         return Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer); 
