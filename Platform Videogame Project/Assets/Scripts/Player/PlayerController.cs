@@ -14,7 +14,14 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
 
     [SerializeField]
-    private float speed = 3f;
+    private float moveSpeed = 3f;
+
+    [SerializeField]
+    private float runSpeed = 6f;
+    private bool isRunning = false;
+
+    [SerializeField]
+    private float crouchSpeed = 2f;
     private float movement;    
 
     [Header("Jump")]
@@ -31,6 +38,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Vector2 groundCheckSize;
 
+    [Header("Crouch")]
+
+    [SerializeField]
+    private BoxCollider2D crouchCol;
+    private bool isCrouching = false;
+
     private void Update()
     {
         animator.SetFloat("Horizontal", movement);
@@ -42,7 +55,12 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.velocity = new Vector2(movement * speed, rb.velocity.y);
+        if(isRunning)
+            rb.velocity = new Vector2(movement * runSpeed, rb.velocity.y);
+        else if(isCrouching)
+            rb.velocity = new Vector2(movement * crouchSpeed, rb.velocity.y);
+        else
+            rb.velocity = new Vector2(movement * moveSpeed, rb.velocity.y);
     }
 
     public void Walk(InputAction.CallbackContext walk)
@@ -52,12 +70,12 @@ public class PlayerController : MonoBehaviour
 
     public void Run(InputAction.CallbackContext run)
     {
-        if(run.performed)
-            SetSpeed(speed * 2);
+        if(run.performed) // if we running we flip the run boolean which by default it's false.
+            isRunning = !isRunning;
         else
         {
-            if(run.canceled)
-                SetSpeed(speed * .5f);
+            if(run.canceled) // when we stop running we flip again the boolean now from true to false.
+                isRunning = !isRunning;
         }
     }
 
@@ -84,12 +102,26 @@ public class PlayerController : MonoBehaviour
             animator.SetTrigger("Jump");
         }
     }
-
-    public void SetSpeed(float newSpeed)
+    public void Crouch(InputAction.CallbackContext crouch)
     {
-        speed = newSpeed;
-    }
+        if(crouch.performed) // if we're crouching
+        {
+            // we are crouching now
 
+            isCrouching = !isCrouching;
+
+            // disable the head collider
+
+            crouchCol.enabled = false;
+
+            // play crouch animation
+        }
+        else if(crouch.canceled) // if we do not
+        {
+            isCrouching = !isCrouching;
+        }
+    }
+    
     private bool IsGrounded()
     {
         return Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer); 

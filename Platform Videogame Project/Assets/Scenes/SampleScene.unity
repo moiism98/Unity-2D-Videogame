@@ -816,6 +816,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 4bc3c0e6-6c49-4ff6-bf87-c7a26884e74e
     m_ActionName: Player/Jump[/Keyboard/space,/XInputControllerWindows/buttonSouth]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1676666884}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: Crouch
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: b00d9d74-230e-40ec-845c-2a79fc9e4319
+    m_ActionName: Player/Crouch[/Keyboard/s,/XInputControllerWindows/leftStick/down]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -835,13 +851,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 1676666882}
   animator: {fileID: 1676666879}
-  speed: 3
+  moveSpeed: 3
+  runSpeed: 6
+  crouchSpeed: 2
   jumpForce: 10
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
   groundCheck: {fileID: 910869344}
   groundCheckSize: {x: 0.35, y: 0.1}
+  crouchCol: {fileID: 1676666886}
 --- !u!58 &1676666885
 CircleCollider2D:
   m_ObjectHideFlags: 0
