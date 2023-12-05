@@ -43,6 +43,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private BoxCollider2D crouchCol;
     private bool isCrouching = false;
+    private bool buttonPressed = false;
+
+    [SerializeField]
+    private Transform ceilingCheck;
+
+    [SerializeField]
+    private LayerMask ceilingLayer;
+
+    [SerializeField]
+    private float ceilingCheckRadius = .10f;
 
     private void Update()
     {
@@ -51,11 +61,13 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("Speed", Mathf.Abs(movement));
 
         animator.SetFloat("Fall", rb.velocity.y);
+        
+        ResetCrouch(); // this method reset the crouching when the crouch button is not pressed and we are not under ceilings.
     }
 
     private void FixedUpdate()
     {
-        if(isRunning)
+        if(isRunning && !isCrouching)
             rb.velocity = new Vector2(movement * runSpeed, rb.velocity.y);
         else if(isCrouching)
             rb.velocity = new Vector2(movement * crouchSpeed, rb.velocity.y);
@@ -81,7 +93,7 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext jump)
     {
-        if(IsGrounded()) // when we add this piece of code the little jump stop working, find out what's happening and fix it up!
+        if(IsGrounded() && !isCrouching) // when we add this piece of code the little jump stop working, find out what's happening and fix it up!
         {
             if(jump.performed) // normal jump
                 rb.velocity = new Vector2(transform.position.x, jumpForce);
@@ -96,27 +108,54 @@ public class PlayerController : MonoBehaviour
     }
     public void Crouch(InputAction.CallbackContext crouch)
     {
-        if(crouch.performed) // if we're crouching
+        if(crouch.performed) // if we're pressing the crouch button.
         {
-            isCrouching = !isCrouching; // we are crouching now
+            isCrouching = true; // we are now crouching.
 
-            crouchCol.enabled = false; // disable the head collider
+            buttonPressed = true; // save the button state. PRESSING IT
+
+            crouchCol.enabled = false; // disable the top collider.
         }
-        else if(crouch.canceled) // if we do not
+        else  // if we do not
         {
-            isCrouching = !isCrouching;
+            if(crouch.canceled) // when we release the crouch button.
+            {
+                if(!CeilingAbove()) // check if detect ceiling above, if not, we stay crouching.
+                {
+                    isCrouching = false; // we are no longer crouching.
 
-            crouchCol.enabled = true;
+                    crouchCol.enabled = true; // enable the top collider.
+                }
+
+                buttonPressed = false; // but change this value because we've released the button. NOT PRESSING IT
+            }
         }
 
-        // play crouch animation
+        // play crouch animation.
 
         animator.SetBool("Crouch", isCrouching);
     }
 
-    private bool IsGrounded()
+    private bool IsGrounded() // detects if we are touching the ground
     {
         return Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer); 
+    }
+
+    private bool CeilingAbove() // detects if we are above ceilings
+    {
+        return Physics2D.OverlapCircle(transform.position, ceilingCheckRadius ,ceilingLayer);
+    }
+
+    private void ResetCrouch()
+    {
+        if(!buttonPressed && !CeilingAbove()) // if the crouch button it's not pressed and whe are not under ceiling.
+        {
+            crouchCol.enabled = true; // activates the top collider.
+
+            isCrouching = false; // we are no longer crouching.
+
+            animator.SetBool("Crouch", isCrouching); // stop the crouch animation.
+        }
     }
 
     private void OnDrawGizmosSelected()
@@ -124,5 +163,7 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.white;
 
         Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
+
+        Gizmos.DrawWireSphere(ceilingCheck.position, ceilingCheckRadius);
     }
 }
