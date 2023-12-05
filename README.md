@@ -1,6 +1,11 @@
 # Platform-Videogame-Project
 This is a platform videogame project in which the main goals will be learn more about Unity2D physics, advanced animations, the use of scriptable objects and the "new" input system.
 
+# Git work states:
+
+WIP: Work in progress.
+WD: Work done
+
 #From this:
 
 # /[Ll]ibrary/
