@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
     [Header("Crouch")]
 
     [SerializeField]
-    private BoxCollider2D crouchCol;
+    private Collider2D crouchCol;
     private bool isCrouching = false;
     private bool buttonPressed = false;
 
@@ -141,7 +141,7 @@ public class PlayerController : MonoBehaviour
         return Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer); 
     }
 
-    private bool CeilingAbove() // detects if we are above ceilings
+    private bool CeilingAbove() // detects if we are under ceilings
     {
         return Physics2D.OverlapCircle(transform.position, ceilingCheckRadius ,ceilingLayer);
     }
