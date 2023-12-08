@@ -6,7 +6,10 @@ This is a platform videogame project in which the main goals will be learn more 
 WIP: Work in progress.
 WD: Work done
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 343288c4037d8838ea9dca0fd84fdb3f506e5896
 #From this:
 
 # /[Ll]ibrary/
