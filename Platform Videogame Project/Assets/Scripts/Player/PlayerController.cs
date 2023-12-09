@@ -58,8 +58,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     private float ceilingCheckRadius = .10f;
-
-    private GameObject platform;
+    private bool isjumpingUnderPlatform = false;
 
     private void Update()
     {
@@ -69,9 +68,7 @@ public class PlayerController : MonoBehaviour
 
         animator.SetFloat("Fall", rb.velocity.y);
 
-        animator.SetBool("Crouch", isCrouching);
-        
-        ResetCrouch(); // this method reset the crouching when the crouch button is not pressed and we are not under ceilings.
+        ResetCrouch(); // this method reset the crouch animation and action when the crouch button is not pressed!
     }
 
     private void FixedUpdate()
@@ -102,21 +99,16 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext jump)
     {
-        if(IsGrounded()) // when we add this piece of code the little jump stop working, find out what's happening and fix it up!
+        if(IsGrounded()) // the player only can jump if we are in the ground
         {
-            if(!isCrouching)
+            if(!isCrouching) // or not crouching
             {
-                if(jump.performed) // normal jump
+                if(jump.performed)
                     rb.velocity = new Vector2(transform.position.x, jumpForce);
-                /*else
-                {   
-                    if(jump.canceled) // little jump
-                        rb.velocity = new Vector2(transform.position.x, rb.velocity.y * .5f); 
-                }*/
 
                 animator.SetTrigger("Jump");
             }
-            else if(AbovePlatform())
+            else if(AbovePlatform()) // if we are crouching, standing on a platform and pressing the jump button we pass through it falling into the ground.
                 StartCoroutine(JumpUnderPlatform());
         }
     }
@@ -135,11 +127,14 @@ public class PlayerController : MonoBehaviour
         {
             if(crouch.canceled) // when we release the crouch button.
             {
-                if(!CeilingAbove()) // check if detect ceiling above, if not, we stay crouching.
+                if(!isjumpingUnderPlatform) // check if we are not jumping under platform
                 {
-                    isCrouching = false; // we are no longer crouching.
+                    if(!CeilingAbove()) // if we are not above a platform, check if detect ceiling above, if not, we stay crouching.
+                    {
+                        isCrouching = false; // we are no longer crouching.
 
-                    crouchCol.enabled = true; // enable the top collider.
+                        crouchCol.enabled = true; // enable the top collider.
+                    }
                 }
 
                 buttonPressed = false; // but change this value because we've released the button. NOT PRESSING IT
@@ -154,16 +149,7 @@ public class PlayerController : MonoBehaviour
 
     private bool AbovePlatform() // detects if we are touching a platform
     {
-        Collider2D onPlatform = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, platformLayer);
-
-        if(onPlatform != null)
-        {
-            platform = onPlatform.gameObject;
-
-            return true;
-        }
-
-        return false;
+        return Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, platformLayer);
     }
 
     private bool CeilingAbove() // detects if we are under ceilings
@@ -173,23 +159,50 @@ public class PlayerController : MonoBehaviour
 
     private void ResetCrouch()
     {
-        if(!buttonPressed && !CeilingAbove()) // if the crouch button it's not pressed and whe are not under ceiling.
-        {
-            crouchCol.enabled = true; // activates the top collider.
+        // now our crouching animation depends also in if we are jumping over a platform or not
 
-            isCrouching = false; // we are no longer crouching.
+        // if we are not jumping over a platform our animation is still working as always, depending on buttons and ceilings. 
+
+        // but if we are jumping over a platform we now have to reset the crouch animation because we are falling over it.
+
+        animator.SetBool("Crouch", isCrouching);
+
+        _ = isjumpingUnderPlatform == true ? isCrouching = false : isCrouching = true;
+
+        if(!buttonPressed) // if the crouch button it's not pressed and whe are not under ceiling.
+        {
+            if(!isjumpingUnderPlatform)
+            {
+                if(!CeilingAbove())
+                {
+                    crouchCol.enabled = true; // activates the top collider.
+
+                    isCrouching = false; // we are no longer crouching.
+                }
+            }
         }
     }
 
     private IEnumerator JumpUnderPlatform() 
     {
-        platform.GetComponent<TilemapCollider2D>().enabled = false; // disable platorm collider.
 
-        isCrouching = false; // also the crouch animator, we are falling now.
+        // disable the player's capsule collider (his body)
+
+        CapsuleCollider2D [] playerColliders = gameObject.GetComponents<CapsuleCollider2D>();
+
+        foreach(CapsuleCollider2D col in playerColliders)
+            col.enabled = false;
+
+        isjumpingUnderPlatform = true;
 
         yield return new WaitForSeconds(.35f); // wait an amount of secs
 
-        platform.GetComponent<TilemapCollider2D>().enabled = true; // and enable the platform collider again.
+        // reactivate the player colliders
+
+        foreach(CapsuleCollider2D col in playerColliders)
+            col.enabled = true;
+
+        isjumpingUnderPlatform = false;
     }
 
     private void OnDrawGizmosSelected()
