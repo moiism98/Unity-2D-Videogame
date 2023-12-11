@@ -1,11 +1,6 @@
 > Platform-Videogame-Project
 > This is a platform videogame project in which the main goals will be learn more about Unity2D physics, advanced animations, the use of scriptable objects and the "new" input system.
-
-> [!NOTE]
-
-> CREDITS TO ANSIMUZ MOST OF THE GAME ASSETS (SPRITES, ANIMATIONS AND AUDIO) ARE DESIGNED BY HIM ❤❤
-> https://linktr.ee/ansimuz
-
+> 
 > [!NOTE]
 > Git work states:
 
