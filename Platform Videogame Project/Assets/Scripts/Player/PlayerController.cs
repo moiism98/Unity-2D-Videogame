@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Diagnostics;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 
@@ -30,6 +32,11 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     private float jumpForce = 5f;
+
+    [SerializeField]
+    private float doubleJumpForce = 2.5f;
+    private int totalJumps = 2;
+    private int jumps;
 
     [SerializeField]
     private LayerMask groundLayer;
@@ -69,6 +76,10 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("Fall", rb.velocity.y);
 
         ResetCrouch(); // this method reset the crouch animation and action when the crouch button is not pressed!
+
+        CanJump();
+
+        Debug.Log("Jumps: " + jumps);
     }
 
     private void FixedUpdate()
@@ -99,18 +110,35 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext jump)
     {
-        if(IsGrounded()) // the player only can jump if we are in the ground
+        if(jumps < totalJumps)
         {
             if(!isCrouching) // or not crouching
             {
-                if(jump.performed)
-                    rb.velocity = new Vector2(transform.position.x, jumpForce);
+                if(jump.performed) // normal jump
+                    ApplyJumpForce(jumpForce);
+                else if(jump.canceled) // little jump
+                    ApplyJumpForce(doubleJumpForce);
 
                 animator.SetTrigger("Jump");
             }
             else if(AbovePlatform()) // if we are crouching, standing on a platform and pressing the jump button we pass through it falling into the ground.
                 StartCoroutine(JumpUnderPlatform());
         }
+    }
+
+    private void ApplyJumpForce(float jumpForce)
+    {
+        rb.velocity = new Vector2(transform.position.x, jumpForce);
+
+        jumps++;
+    }
+
+    private void CanJump() // check every frame if we can jump or not.
+    {
+        bool ground = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer);
+
+        if(ground) // if we touch the ground reset the jumps number again.
+            jumps = 0;
     }
     public void Crouch(InputAction.CallbackContext crouch)
     {
@@ -140,11 +168,6 @@ public class PlayerController : MonoBehaviour
                 buttonPressed = false; // but change this value because we've released the button. NOT PRESSING IT
             }
         }
-    }
-
-    private bool IsGrounded() // detects if we are touching the ground
-    {
-        return Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer); 
     }
 
     private bool AbovePlatform() // detects if we are touching a platform
