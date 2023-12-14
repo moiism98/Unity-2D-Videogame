@@ -67,6 +67,14 @@ public class PlayerController : MonoBehaviour
     private float ceilingCheckRadius = .10f;
     private bool isjumpingUnderPlatform = false;
 
+    [Header("Slopes materials")]
+
+    [SerializeField]
+    private PhysicsMaterial2D noFriction;
+
+    [SerializeField]
+    private PhysicsMaterial2D antiSliding;
+
     private void Update()
     {
         animator.SetFloat("Horizontal", movement);
@@ -88,6 +96,8 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector2(movement * crouchSpeed, rb.velocity.y);
         else
             rb.velocity = new Vector2(movement * moveSpeed, rb.velocity.y);
+
+        NoSlidingOnSlopes();
     }
 
     public void Walk(InputAction.CallbackContext walk)
@@ -145,6 +155,14 @@ public class PlayerController : MonoBehaviour
 
         if(ground) // if we touch the ground reset the jumps number again.
             jumps = 0;
+    }
+
+    private void NoSlidingOnSlopes()
+    {
+        if(Mathf.Abs(movement) > 0)
+            rb.sharedMaterial = noFriction;
+        else
+            rb.sharedMaterial = antiSliding;
     }
     public void Crouch(InputAction.CallbackContext crouch)
     {
