@@ -78,8 +78,6 @@ public class PlayerController : MonoBehaviour
         ResetCrouch(); // this method reset the crouch animation and action when the crouch button is not pressed!
 
         CanJump();
-
-        Debug.Log("Jumps: " + jumps);
     }
 
     private void FixedUpdate()
@@ -101,27 +99,35 @@ public class PlayerController : MonoBehaviour
     {
         if(run.performed) // if we running we flip the run boolean which by default it's false.
             isRunning = !isRunning;
-        else
-        {
-            if(run.canceled) // when we stop running we flip again the boolean now from true to false.
-                isRunning = !isRunning;
-        }
+        else if(run.canceled) // when we stop running we flip again the boolean now from true to false.
+            isRunning = !isRunning;
     }
 
     public void Jump(InputAction.CallbackContext jump)
     {
-        if(jumps < totalJumps)
+        if(jumps < totalJumps && !isCrouching) // we only can jump if we have jumps remaining and we are not crouching!
         {
-            if(!isCrouching) // or not crouching
-            {
-                if(jump.performed) // normal jump
-                    ApplyJumpForce(jumpForce);
-                else if(jump.canceled) // little jump
-                    ApplyJumpForce(doubleJumpForce);
+            if(jump.performed) // normal jump
+                ApplyJumpForce(jumpForce);
+            else if(jump.canceled) // little jump
+                ApplyJumpForce(doubleJumpForce);
 
-                animator.SetTrigger("Jump");
-            }
-            else if(AbovePlatform()) // if we are crouching, standing on a platform and pressing the jump button we pass through it falling into the ground.
+            animator.SetTrigger("Jump");
+        }
+    }
+
+    public void PassThroughPlatform(InputAction.CallbackContext passThroughPlatform)
+    {
+        /*
+            we have to add the "tap" interaction to the input action because we are using the same buttons we use for crouching!
+
+            and also we have to use "performed" instead of "canceled" because if we choose this option we can not crouch:
+            if we release the button the player will pass through the platform whenever we stop crouching, we do not want that, only when we tap the button!
+        */
+        
+        if(passThroughPlatform.performed) 
+        {
+            if(AbovePlatform()) // we check if we are above a platform so we can pass through it.
                 StartCoroutine(JumpUnderPlatform());
         }
     }
@@ -147,11 +153,11 @@ public class PlayerController : MonoBehaviour
         {
             isCrouching = true; // we are now crouching.
 
-            buttonPressed = true; // save the button state. PRESSING IT
+            buttonPressed = true; // save the button state.
 
             crouchCol.enabled = false; // disable the top collider.
         }
-        else  // if we do not
+        else  // if we don't
         {
             if(crouch.canceled) // when we release the crouch button.
             {
@@ -165,7 +171,7 @@ public class PlayerController : MonoBehaviour
                     }
                 }
 
-                buttonPressed = false; // but change this value because we've released the button. NOT PRESSING IT
+                buttonPressed = false; // but change this value because we've released the button.
             }
         }
     }
