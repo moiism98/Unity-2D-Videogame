@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -9,8 +10,14 @@ using UnityEngine.Tilemaps;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Physics and gravity")]
+
     [SerializeField]
     private Rigidbody2D rb;
+
+    [SerializeField]
+    private AnimationCurve gravityCurve;
+    private float maxFallSpeed = 20;
 
     [SerializeField]
     private Animator animator;
@@ -98,6 +105,8 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector2(movement * moveSpeed, rb.velocity.y);
 
         NoSlidingOnSlopes();
+
+        CalculateGravity();
     }
 
     public void Walk(InputAction.CallbackContext walk)
@@ -163,6 +172,20 @@ public class PlayerController : MonoBehaviour
             rb.sharedMaterial = noFriction;
         else
             rb.sharedMaterial = antiSliding;
+    }
+
+    private void CalculateGravity()
+    {
+        if(rb.velocity.y < maxFallSpeed)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -maxFallSpeed)); // this cap our fall speed at our maxFallSpeed
+
+            // we use the animation curve to set player's gravity based on our fall speed so our gravity it's not static on jumps
+
+            rb.gravityScale = gravityCurve.Evaluate(rb.velocity.y);
+
+        }
+
     }
     public void Crouch(InputAction.CallbackContext crouch)
     {
@@ -242,7 +265,7 @@ public class PlayerController : MonoBehaviour
 
         isjumpingUnderPlatform = true;
 
-        yield return new WaitForSeconds(.35f); // wait an amount of secs
+        yield return new WaitForSeconds(.25f); // wait an amount of secs
 
         // reactivate the player colliders
 
