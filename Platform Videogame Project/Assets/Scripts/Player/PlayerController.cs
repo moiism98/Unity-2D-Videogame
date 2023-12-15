@@ -7,9 +7,11 @@ using UnityEngine;
 using UnityEngine.Diagnostics;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
-
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField]
+    private Animator animator;
+
     [Header("Physics and gravity")]
 
     [SerializeField]
@@ -18,9 +20,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private AnimationCurve gravityCurve;
     private float maxFallSpeed = 20;
-
-    [SerializeField]
-    private Animator animator;
 
     [Header("Movement")]
 
@@ -54,6 +53,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Vector2 groundCheckSize;
 
+    [Header("Jump state")]
+    [SerializeField] JumpState jumpState = JumpState.grounded;
+
     [Header("Crouch")]
 
     [SerializeField]
@@ -85,6 +87,7 @@ public class PlayerController : MonoBehaviour
     [Header("Particles effect")]
     [SerializeField] private ParticleSystem runParticles;
     [SerializeField] private ParticleSystem landingParticles;
+    private bool activateLandingParticles = false;
 
     private void Update()
     {
@@ -108,9 +111,9 @@ public class PlayerController : MonoBehaviour
         else
             rb.velocity = new Vector2(movement * moveSpeed, rb.velocity.y);
 
-        NoSlidingOnSlopes();
+        NoSlidingOnSlopes(); // method which applies a friction if we are stoped slopes
 
-        CalculateGravity();
+        CalculateGravity(); // method which calculates the gravity when player falls
     }
 
     public void Walk(InputAction.CallbackContext walk)
@@ -144,7 +147,11 @@ public class PlayerController : MonoBehaviour
             else if(jump.canceled) // little jump
                 ApplyJumpForce(doubleJumpForce);
 
-            animator.SetTrigger("Jump");
+            animator.SetTrigger("Jump"); 
+
+            // if we are in the air, we are prepare to play the landing particles
+            
+            activateLandingParticles = !activateLandingParticles;               
         }
     }
 
@@ -176,15 +183,24 @@ public class PlayerController : MonoBehaviour
         bool ground = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer);
 
         if(ground) // if we touch the ground reset the jumps number again. 
+        {
             jumps = 0;
+        
+            if(activateLandingParticles) // when we touch the ground activates the particles and reset the state so it's not playing every frame
+            {
+                activateLandingParticles = !activateLandingParticles;
+
+                landingParticles.Play();
+            }
+        }
     }
 
     private void NoSlidingOnSlopes()
     {
-        if(Mathf.Abs(movement) > 0)
+        if(Mathf.Abs(movement) > 0) // if we are moving we apply no friction on our player
             rb.sharedMaterial = noFriction;
         else
-            rb.sharedMaterial = antiSliding;
+            rb.sharedMaterial = antiSliding; // if we not, we apply high friction on our player to stop the sliding effect (he 'sticks' on the ground)
     }
 
     private void CalculateGravity()
@@ -196,9 +212,7 @@ public class PlayerController : MonoBehaviour
             // we use the animation curve to set player's gravity based on our fall speed so our gravity it's not static on jumps
 
             rb.gravityScale = gravityCurve.Evaluate(rb.velocity.y);
-
         }
-
     }
     public void Crouch(InputAction.CallbackContext crouch)
     {
