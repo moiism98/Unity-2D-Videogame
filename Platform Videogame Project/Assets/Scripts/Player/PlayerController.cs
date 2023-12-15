@@ -82,6 +82,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private PhysicsMaterial2D antiSliding;
 
+    [Header("Particles effect")]
+    [SerializeField] private ParticleSystem runParticles;
+    [SerializeField] private ParticleSystem landingParticles;
+
     private void Update()
     {
         animator.SetFloat("Horizontal", movement);
@@ -117,9 +121,18 @@ public class PlayerController : MonoBehaviour
     public void Run(InputAction.CallbackContext run)
     {
         if(run.performed) // if we running we flip the run boolean which by default it's false.
+        {
+            if(Mathf.Abs(movement) > 0)
+                runParticles.Play();
+
             isRunning = !isRunning;
+        }
         else if(run.canceled) // when we stop running we flip again the boolean now from true to false.
+        {
             isRunning = !isRunning;
+        
+            runParticles.Stop();
+        }
     }
 
     public void Jump(InputAction.CallbackContext jump)
@@ -162,7 +175,7 @@ public class PlayerController : MonoBehaviour
     {
         bool ground = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer);
 
-        if(ground) // if we touch the ground reset the jumps number again.
+        if(ground) // if we touch the ground reset the jumps number again. 
             jumps = 0;
     }
 
