@@ -13,7 +13,7 @@ TagManager:
   - UI
   - Player
   - Platform
-  - 
+  - Ladder
   - 
   - 
   - 
@@ -46,6 +46,9 @@ TagManager:
     locked: 0
   - name: MidBackground
     uniqueID: 1706692711
+    locked: 0
+  - name: Ladder
+    uniqueID: 3411978721
     locked: 0
   - name: Player
     uniqueID: 4257236407
