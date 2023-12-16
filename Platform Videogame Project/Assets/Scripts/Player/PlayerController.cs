@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Particles effect")]
     [SerializeField] private ParticleSystem runParticles;
-    [SerializeField] private ParticleSystem landingParticles;
+    [SerializeField] private ParticleSystem jumpParticles;
     private bool activateLandingParticles = false;
 
     private void Update()
@@ -125,8 +125,8 @@ public class PlayerController : MonoBehaviour
     {
         if(run.performed) // if we running we flip the run boolean which by default it's false.
         {
-            if(Mathf.Abs(movement) > 0)
-                runParticles.Play();
+            if(Mathf.Abs(movement) > 0 && !isCrouching)
+                PlayRunParticles();
 
             isRunning = !isRunning;
         }
@@ -134,7 +134,7 @@ public class PlayerController : MonoBehaviour
         {
             isRunning = !isRunning;
         
-            runParticles.Stop();
+            StopRunParticles();
         }
     }
 
@@ -147,11 +147,9 @@ public class PlayerController : MonoBehaviour
             else if(jump.canceled) // little jump
                 ApplyJumpForce(doubleJumpForce);
 
-            animator.SetTrigger("Jump"); 
-
             // if we are in the air, we are prepare to play the landing particles
-            
-            activateLandingParticles = !activateLandingParticles;               
+
+            activateLandingParticles = !activateLandingParticles;     
         }
     }
 
@@ -175,6 +173,10 @@ public class PlayerController : MonoBehaviour
     {
         rb.velocity = new Vector2(transform.position.x, jumpForce);
 
+        animator.SetTrigger("Jump");
+
+        StopRunParticles();
+
         jumps++;
     }
 
@@ -188,9 +190,9 @@ public class PlayerController : MonoBehaviour
         
             if(activateLandingParticles) // when we touch the ground activates the particles and reset the state so it's not playing every frame
             {
-                activateLandingParticles = !activateLandingParticles;
+                PlayJumpParticles();
 
-                landingParticles.Play();
+                activateLandingParticles = !activateLandingParticles;
             }
         }
     }
@@ -309,5 +311,20 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
 
         Gizmos.DrawWireSphere(ceilingCheck.position, ceilingCheckRadius);
+    }
+
+    private void PlayRunParticles()
+    {
+        runParticles.Play();
+    }
+
+    private void StopRunParticles()
+    {
+        runParticles.Stop();
+    }
+
+    private void PlayJumpParticles()
+    {
+        jumpParticles.Play();
     }
 }

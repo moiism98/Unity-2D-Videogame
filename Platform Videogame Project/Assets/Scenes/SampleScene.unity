@@ -188,7 +188,7 @@ Transform:
   m_GameObject: {fileID: 207203116}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.55, y: -1.91, z: -10}
+  m_LocalPosition: {x: -0.23, y: -2.09, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5277,7 +5277,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.55, y: -1.91, z: -10}
+  m_LocalPosition: {x: -0.23, y: -2.09, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11180,7 +11180,7 @@ Transform:
   m_GameObject: {fileID: 1676666876}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.55, y: -1.91, z: 0}
+  m_LocalPosition: {x: -0.23, y: -2.09, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11360,6 +11360,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9452ec6f397c7e0459c41ac41f0d5a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 1676666879}
   rb: {fileID: 1676666882}
   gravityCurve:
     serializedVersion: 2
@@ -11385,7 +11386,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  animator: {fileID: 1676666879}
   moveSpeed: 3
   runSpeed: 6
   crouchSpeed: 2
@@ -11396,6 +11396,7 @@ MonoBehaviour:
     m_Bits: 136
   groundCheck: {fileID: 910869344}
   groundCheckSize: {x: 0.35, y: 0.1}
+  jumpState: 0
   crouchCol: {fileID: 1676666886}
   ceilingCheck: {fileID: 1971892648}
   ceilingLayer:
