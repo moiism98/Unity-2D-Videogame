@@ -136,6 +136,8 @@ public class PlayerController : MonoBehaviour
         
             StopRunParticles();
         }
+
+        Debug.Log("Used control: " + run.control.device.displayName);
     }
 
     public void Jump(InputAction.CallbackContext jump)

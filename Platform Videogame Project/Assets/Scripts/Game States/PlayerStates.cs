@@ -4,5 +4,11 @@ public enum JumpState
     jumping
 }
 
+public enum LadderAction
+{
+    climbable,
+    notClimbable
+}
+
 
 
