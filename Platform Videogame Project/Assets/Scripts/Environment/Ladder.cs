@@ -8,12 +8,15 @@ public class Ladder : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private RuntimeAnimatorController[] animatorControllers;
     private GameController gameController;
+    private PlayerController playerController;
 
     private void Start()
     {
         buttonBubble.SetActive(false);
 
         gameController = FindObjectOfType<GameController>();
+
+        playerController = FindObjectOfType<PlayerController>();
     }
     private void OnTriggerEnter2D()
     {
@@ -37,9 +40,11 @@ public class Ladder : MonoBehaviour
 
         isClimbable = true;
 
-        // set this ladder on GameController so it can manage the climb action with the PlayerController
+        // set this ladder on GameController and PlayerController so they can manage the climb action
 
         gameController.SetLadder(this);
+
+        playerController.SetLadder(this);
     }
 
     private void HideClimbUI()
@@ -50,9 +55,7 @@ public class Ladder : MonoBehaviour
 
         // hide the climb UI and rebind the animators animation
 
-        buttonBubble.SetActive(false);
-
-        animator.Rebind();
+        HideControllerButton();
 
         // set GameControllers ladder to null, to reset the action
 
@@ -77,6 +80,13 @@ public class Ladder : MonoBehaviour
         }
 
         buttonBubble.SetActive(true);
+    }
+
+    public void HideControllerButton()
+    {
+        buttonBubble.SetActive(false);
+        
+        animator.Rebind();
     }
 
     private void GetAnimatorController(string controllerName)

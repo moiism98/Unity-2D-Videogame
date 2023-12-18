@@ -75,6 +75,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Climb")]
     private bool isClimbing = false;
+    private Ladder ladder;
 
     [Header("Slopes materials")]
 
@@ -106,28 +107,30 @@ public class PlayerController : MonoBehaviour
 
         ResetCrouch(); // this method reset the crouch animation and action when the crouch button is not pressed!
 
-        CanJump();
-
-        
+        CanJump(); // check every frame if we can jump or not.
     }
 
     private void FixedUpdate()
     {
-        if(isRunning && !isCrouching)
+        if(isRunning && !isCrouching && !isClimbing)
             rb.velocity = new Vector2(movement * runSpeed, rb.velocity.y);
-        else if(isCrouching)
+        else if(isCrouching && !isClimbing)
             rb.velocity = new Vector2(movement * crouchSpeed, rb.velocity.y);
+        else if(isClimbing)
+            rb.velocity = new Vector2(rb.velocity.x, movement * moveSpeed);
         else
             rb.velocity = new Vector2(movement * moveSpeed, rb.velocity.y);
 
         NoSlidingOnSlopes(); // method which applies a friction if we are stoped slopes
 
-        CalculateGravity(); // method which calculates the gravity when player falls
+        if(!isClimbing)
+            CalculateGravity(); // method which calculates the gravity when player falls
     }
 
     public void Walk(InputAction.CallbackContext walk)
     {
-        movement = walk.ReadValue<Vector2>().x;
+        if(!isClimbing)
+            movement = walk.ReadValue<Vector2>().x;
 
         gameController.SetControllerInUse(walk.control.device.displayName);
     }
@@ -149,8 +152,6 @@ public class PlayerController : MonoBehaviour
         }
 
         gameController.SetControllerInUse(run.control.device.displayName);
-
-        Debug.Log("Used control: " + run.control.device.displayName);
     }
 
     public void Jump(InputAction.CallbackContext jump)
@@ -159,7 +160,7 @@ public class PlayerController : MonoBehaviour
         {
             if(jump.performed) // normal jump
                 ApplyJumpForce(jumpForce);
-            else if(jump.canceled) // little jump
+            else if(jump.canceled && !isClimbing) // little jump, we have to check if we are not climbing because we could break the climb action
                 ApplyJumpForce(doubleJumpForce);
 
             // if we are in the air, we are prepare to play the landing particles
@@ -172,29 +173,32 @@ public class PlayerController : MonoBehaviour
 
     public void Crouch(InputAction.CallbackContext crouch)
     {
-        if(crouch.performed) // if we're pressing the crouch button.
+        if(!isClimbing) // if we are not climbing we can crouch
         {
-            isCrouching = true; // we are now crouching.
-
-            buttonPressed = true; // save the button state.
-
-            crouchCol.enabled = false; // disable the top collider.
-        }
-        else  // if we don't
-        {
-            if(crouch.canceled) // when we release the crouch button.
+            if(crouch.performed) // if we're pressing the crouch button.
             {
-                if(!isjumpingUnderPlatform) // check if we are not jumping under platform
+                isCrouching = true; // we are now crouching.
+
+                buttonPressed = true; // save the button state.
+
+                crouchCol.enabled = false; // disable the top collider.
+            }
+            else  // if we don't
+            {
+                if(crouch.canceled) // when we release the crouch button.
                 {
-                    if(!CeilingAbove()) // if we are not above a platform, check if detect ceiling above, if not, we stay crouching.
+                    if(!isjumpingUnderPlatform) // check if we are not jumping under platform
                     {
-                        isCrouching = false; // we are no longer crouching.
+                        if(!CeilingAbove()) // if we are not above a platform, check if detect ceiling above, if not, we stay crouching.
+                        {
+                            isCrouching = false; // we are no longer crouching.
 
-                        crouchCol.enabled = true; // enable the top collider.
+                            crouchCol.enabled = true; // enable the top collider.
+                        }
                     }
-                }
 
-                buttonPressed = false; // but change this value because we've released the button.
+                    buttonPressed = false; // but change this value because we've released the button.
+                }
             }
         }
 
@@ -219,10 +223,31 @@ public class PlayerController : MonoBehaviour
         gameController.SetControllerInUse(passThroughPlatform.control.device.displayName);
     }
 
-    public void Climb(InputAction.CallbackContext climb)
+    public void ClimbAction(InputAction.CallbackContext climb)
     { 
         if(climb.performed)
-            gameController.Climb();
+        {            
+            if(ladder != null)
+            {
+                transform.position = new Vector2(ladder.transform.position.x, transform.position.y);
+
+                SetIsClimbing(!isClimbing);
+
+                rb.gravityScale = 0; // we cancel the gravity on climb so we can not slide over the ladder
+
+                ladder.gameObject.SetActive(false); // and hide the button bubble
+            }
+
+            animator.SetTrigger("Climb");
+        }
+
+        gameController.SetControllerInUse(climb.control.device.displayName);
+    }
+
+    public void Climb(InputAction.CallbackContext climb)
+    {
+        if(isClimbing)
+            movement = climb.ReadValue<Vector2>().y;
 
         gameController.SetControllerInUse(climb.control.device.displayName);
     }
@@ -236,6 +261,13 @@ public class PlayerController : MonoBehaviour
         StopRunParticles();
 
         jumps++;
+
+        if(isClimbing) // jump it's the only way to cancel the climb action
+        {
+            SetIsClimbing(!isClimbing);
+
+            ladder.gameObject.SetActive(true);
+        }
     }
 
     private void CanJump() // check every frame if we can jump or not.
@@ -360,5 +392,10 @@ public class PlayerController : MonoBehaviour
     public void SetIsClimbing(bool isClimbing)
     {
         this.isClimbing = isClimbing;
+    }
+
+    public void SetLadder(Ladder ladder)
+    {
+        this.ladder = ladder;
     }
 }

@@ -11639,7 +11639,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1676666884}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
-        m_MethodName: Climb
+        m_MethodName: ClimbAction
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11651,6 +11651,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 5994f09d-991f-416f-b06b-6dce9aad9b49
     m_ActionName: Player/Climb[/Keyboard/e,/XInputControllerWindows/buttonSouth]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1676666884}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: Climb
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 755c7b2e-0fbc-4320-8045-1ac4520c8e30
+    m_ActionName: Player/New action
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -17744,6 +17760,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed50f98dd412acf4fb59499fe5b6a892, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isClimbable: 0
   buttonBubble: {fileID: 1770713513}
   animator: {fileID: 1770713516}
   animatorControllers:
