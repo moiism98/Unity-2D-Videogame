@@ -11260,6 +11260,50 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &1408480951
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1408480952}
+  - component: {fileID: 1408480953}
+  m_Layer: 0
+  m_Name: GameController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1408480952
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1408480951}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1408480953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1408480951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 036c419c4e2e5544696977db6d12f515, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1648460921
 GameObject:
   m_ObjectHideFlags: 0
@@ -11591,6 +11635,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: ef505dd1-d3f4-4150-a26c-edddc44cd9e5
     m_ActionName: Player/PassThoughPlatforms[/Keyboard/s]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1676666884}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: Climb
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 5994f09d-991f-416f-b06b-6dce9aad9b49
+    m_ActionName: Player/Climb[/Keyboard/e,/XInputControllerWindows/buttonSouth]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -11644,7 +11704,6 @@ MonoBehaviour:
     m_Bits: 136
   groundCheck: {fileID: 910869344}
   groundCheckSize: {x: 0.35, y: 0.1}
-  jumpState: 0
   crouchCol: {fileID: 1676666886}
   ceilingCheck: {fileID: 1971892648}
   ceilingLayer:
@@ -17666,7 +17725,7 @@ Transform:
   m_GameObject: {fileID: 1884825050}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.5, y: -1.5, z: 0}
+  m_LocalPosition: {x: -7.5, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17685,13 +17744,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed50f98dd412acf4fb59499fe5b6a892, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ladderAction: 0
   buttonBubble: {fileID: 1770713513}
-  ladderAnimator: {fileID: 1770713516}
-  animationClips:
-  - {fileID: 7400000, guid: 93fe7387b2d6b2047afa04ba1e760d28, type: 2}
-  - {fileID: 7400000, guid: c887df442129bd44fa9097ec59983ef1, type: 2}
-  - {fileID: 7400000, guid: c480033e434aea342b321c27d635740b, type: 2}
+  animator: {fileID: 1770713516}
+  animatorControllers:
+  - {fileID: 9100000, guid: ec0cccbc8f90c454f914f1aaa85687a8, type: 2}
+  - {fileID: 9100000, guid: 44dd2c5fdbf5e634ba2ee671fe9707f0, type: 2}
+  - {fileID: 9100000, guid: d9e83c7b57d9fa0469c5e7e1ea5f8689, type: 2}
 --- !u!58 &1884825053
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -17762,6 +17820,7 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1408480952}
   - {fileID: 513136900}
   - {fileID: 1693582757}
   - {fileID: 441094312}

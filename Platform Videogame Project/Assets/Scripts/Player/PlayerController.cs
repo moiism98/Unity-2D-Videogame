@@ -53,9 +53,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Vector2 groundCheckSize;
 
-    [Header("Jump state")]
-    [SerializeField] JumpState jumpState = JumpState.grounded;
-
     [Header("Crouch")]
 
     [SerializeField]
@@ -76,6 +73,9 @@ public class PlayerController : MonoBehaviour
     private float ceilingCheckRadius = .10f;
     private bool isjumpingUnderPlatform = false;
 
+    [Header("Climb")]
+    private bool isClimbing = false;
+
     [Header("Slopes materials")]
 
     [SerializeField]
@@ -89,6 +89,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private ParticleSystem jumpParticles;
     private bool activateLandingParticles = false;
 
+    private GameController gameController;
+
+    private void Start()
+    {
+        gameController = FindObjectOfType<GameController>();
+    }
+
     private void Update()
     {
         animator.SetFloat("Horizontal", movement);
@@ -100,6 +107,8 @@ public class PlayerController : MonoBehaviour
         ResetCrouch(); // this method reset the crouch animation and action when the crouch button is not pressed!
 
         CanJump();
+
+        
     }
 
     private void FixedUpdate()
@@ -119,6 +128,8 @@ public class PlayerController : MonoBehaviour
     public void Walk(InputAction.CallbackContext walk)
     {
         movement = walk.ReadValue<Vector2>().x;
+
+        gameController.SetControllerInUse(walk.control.device.displayName);
     }
 
     public void Run(InputAction.CallbackContext run)
@@ -137,6 +148,8 @@ public class PlayerController : MonoBehaviour
             StopRunParticles();
         }
 
+        gameController.SetControllerInUse(run.control.device.displayName);
+
         Debug.Log("Used control: " + run.control.device.displayName);
     }
 
@@ -153,6 +166,39 @@ public class PlayerController : MonoBehaviour
 
             activateLandingParticles = !activateLandingParticles;     
         }
+
+        gameController.SetControllerInUse(jump.control.device.displayName);
+    }
+
+    public void Crouch(InputAction.CallbackContext crouch)
+    {
+        if(crouch.performed) // if we're pressing the crouch button.
+        {
+            isCrouching = true; // we are now crouching.
+
+            buttonPressed = true; // save the button state.
+
+            crouchCol.enabled = false; // disable the top collider.
+        }
+        else  // if we don't
+        {
+            if(crouch.canceled) // when we release the crouch button.
+            {
+                if(!isjumpingUnderPlatform) // check if we are not jumping under platform
+                {
+                    if(!CeilingAbove()) // if we are not above a platform, check if detect ceiling above, if not, we stay crouching.
+                    {
+                        isCrouching = false; // we are no longer crouching.
+
+                        crouchCol.enabled = true; // enable the top collider.
+                    }
+                }
+
+                buttonPressed = false; // but change this value because we've released the button.
+            }
+        }
+
+        gameController.SetControllerInUse(crouch.control.device.displayName);
     }
 
     public void PassThroughPlatform(InputAction.CallbackContext passThroughPlatform)
@@ -169,6 +215,16 @@ public class PlayerController : MonoBehaviour
             if(AbovePlatform()) // we check if we are above a platform so we can pass through it.
                 StartCoroutine(JumpUnderPlatform());
         }
+
+        gameController.SetControllerInUse(passThroughPlatform.control.device.displayName);
+    }
+
+    public void Climb(InputAction.CallbackContext climb)
+    { 
+        if(climb.performed)
+            gameController.Climb();
+
+        gameController.SetControllerInUse(climb.control.device.displayName);
     }
 
     private void ApplyJumpForce(float jumpForce)
@@ -216,35 +272,6 @@ public class PlayerController : MonoBehaviour
             // we use the animation curve to set player's gravity based on our fall speed so our gravity it's not static on jumps
 
             rb.gravityScale = gravityCurve.Evaluate(rb.velocity.y);
-        }
-    }
-    public void Crouch(InputAction.CallbackContext crouch)
-    {
-
-        if(crouch.performed) // if we're pressing the crouch button.
-        {
-            isCrouching = true; // we are now crouching.
-
-            buttonPressed = true; // save the button state.
-
-            crouchCol.enabled = false; // disable the top collider.
-        }
-        else  // if we don't
-        {
-            if(crouch.canceled) // when we release the crouch button.
-            {
-                if(!isjumpingUnderPlatform) // check if we are not jumping under platform
-                {
-                    if(!CeilingAbove()) // if we are not above a platform, check if detect ceiling above, if not, we stay crouching.
-                    {
-                        isCrouching = false; // we are no longer crouching.
-
-                        crouchCol.enabled = true; // enable the top collider.
-                    }
-                }
-
-                buttonPressed = false; // but change this value because we've released the button.
-            }
         }
     }
 
@@ -328,5 +355,10 @@ public class PlayerController : MonoBehaviour
     private void PlayJumpParticles()
     {
         jumpParticles.Play();
+    }
+
+    public void SetIsClimbing(bool isClimbing)
+    {
+        this.isClimbing = isClimbing;
     }
 }
