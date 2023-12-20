@@ -105,6 +105,8 @@ public class PlayerController : MonoBehaviour
 
         animator.SetFloat("Fall", rb.velocity.y);
 
+        animator.SetBool("Climbing", isClimbing);
+
         ResetCrouch(); // this method reset the crouch animation and action when the crouch button is not pressed!
 
         CanJump(); // check every frame if we can jump or not.
@@ -124,7 +126,11 @@ public class PlayerController : MonoBehaviour
         NoSlidingOnSlopes(); // method which applies a friction if we are stoped slopes
 
         if(!isClimbing)
+        {
             CalculateGravity(); // method which calculates the gravity when player falls
+        
+            EnablePlayerCols();
+        }
     }
 
     public void Walk(InputAction.CallbackContext walk)
@@ -160,7 +166,7 @@ public class PlayerController : MonoBehaviour
         {
             if(jump.performed) // normal jump
                 ApplyJumpForce(jumpForce);
-            else if(jump.canceled && !isClimbing) // little jump, we have to check if we are not climbing because we could break the climb action
+            else if(jump.canceled)
                 ApplyJumpForce(doubleJumpForce);
 
             // if we are in the air, we are prepare to play the landing particles
@@ -227,18 +233,21 @@ public class PlayerController : MonoBehaviour
     { 
         if(climb.performed)
         {            
-            if(ladder != null)
+            if(ladder != null && ladder.GetIsClimbable())
             {
-                transform.position = new Vector2(ladder.transform.position.x, transform.position.y);
+                transform.position = new Vector2(ladder.transform.position.x, ladder.transform.position.y);
 
                 SetIsClimbing(!isClimbing);
 
                 rb.gravityScale = 0; // we cancel the gravity on climb so we can not slide over the ladder
 
-                ladder.gameObject.SetActive(false); // and hide the button bubble
-            }
+                ladder.HideControllerButton(); // and hide the button bubble
 
-            animator.SetTrigger("Climb");
+                CapsuleCollider2D[] playerColliders = gameObject.GetComponents<CapsuleCollider2D>();
+
+                foreach(CapsuleCollider2D playerCollider in playerColliders)
+                    playerCollider.enabled = false;
+            }
         }
 
         gameController.SetControllerInUse(climb.control.device.displayName);
@@ -307,6 +316,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void EnablePlayerCols()
+    {
+        CapsuleCollider2D[] playerColliders = gameObject.GetComponents<CapsuleCollider2D>();
+
+        if(!isCrouching && !isjumpingUnderPlatform)
+        {
+            foreach(CapsuleCollider2D playerCollider in playerColliders)
+                playerCollider.enabled = true;
+        }
+    }
+
     private bool AbovePlatform() // detects if we are touching a platform
     {
         return Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, platformLayer);
@@ -325,19 +345,22 @@ public class PlayerController : MonoBehaviour
 
         // but if we are jumping over a platform we now have to reset the crouch animation because we are falling over it.
 
-        animator.SetBool("Crouch", isCrouching);
-
-        _ = isjumpingUnderPlatform == true ? isCrouching = false : isCrouching = true;
-
-        if(!buttonPressed) // if the crouch button it's not pressed and whe are not under ceiling.
+        if(!isClimbing)
         {
-            if(!isjumpingUnderPlatform)
-            {
-                if(!CeilingAbove())
-                {
-                    crouchCol.enabled = true; // activates the top collider.
+            animator.SetBool("Crouch", isCrouching);
 
-                    isCrouching = false; // we are no longer crouching.
+            _ = isjumpingUnderPlatform == true ? isCrouching = false : isCrouching = true;
+
+            if(!buttonPressed) // if the crouch button it's not pressed, whe are not under ceiling and not trying to jump under a platform.
+            {
+                if(!isjumpingUnderPlatform)
+                {
+                    if(!CeilingAbove())
+                    {
+                        crouchCol.enabled = true; // we activates the top collider.
+
+                        isCrouching = false; // we are no longer crouching.
+                    }
                 }
             }
         }
@@ -397,5 +420,15 @@ public class PlayerController : MonoBehaviour
     public void SetLadder(Ladder ladder)
     {
         this.ladder = ladder;
+    }
+
+    public void SetMovement(float movement)
+    {
+        this.movement = movement;
+    }
+
+    public bool GetIsClimbing()
+    {
+        return isClimbing;
     }
 }

@@ -3,12 +3,14 @@ using UnityEngine;
 
 public class Ladder : MonoBehaviour
 {
+    [SerializeField] private ClimbPoint climbPoint = ClimbPoint.bottom;
     [SerializeField] private bool isClimbable = false;
     [SerializeField] private GameObject buttonBubble;
     [SerializeField] private Animator animator;
     [SerializeField] private RuntimeAnimatorController[] animatorControllers;
     private GameController gameController;
     private PlayerController playerController;
+    private Collider2D climbPointCollider;
 
     private void Start()
     {
@@ -17,19 +19,40 @@ public class Ladder : MonoBehaviour
         gameController = FindObjectOfType<GameController>();
 
         playerController = FindObjectOfType<PlayerController>();
+
+        climbPointCollider = GetComponent<Collider2D>();
     }
     private void OnTriggerEnter2D()
     {
-        PlayerController playerController = FindObjectOfType<PlayerController>();
-
         if(playerController != null)
-            ShowClimbUI();
+        {
+            if(playerController.GetIsClimbing()) // if we touch the climb point when we are climbing
+            {
+                // we check which point we reach, and then move the player to it's position
+
+                if(climbPoint.Equals(ClimbPoint.top))
+                    playerController.gameObject.transform.position = new Vector2(climbPointCollider.transform.position.x, climbPointCollider.transform.position.y + climbPointCollider.offset.y);
+                else
+                    playerController.gameObject.transform.position = climbPointCollider.transform.position;
+                    
+
+                // also the player stops climbing
+
+                playerController.SetIsClimbing(!playerController.GetIsClimbing());
+
+                playerController.GetComponent<Animator>().SetBool("Climbing", playerController.GetIsClimbing());
+
+                // and the set the movement to zero avoiding the player keep moving with the climb movement velocity
+
+                playerController.SetMovement(0f);
+            }
+            else
+                ShowClimbUI();
+        }
     }
 
     private void OnTriggerExit2D()
     {
-        PlayerController playerController = FindObjectOfType<PlayerController>();
-
         if(playerController != null)
             HideClimbUI();
     }
