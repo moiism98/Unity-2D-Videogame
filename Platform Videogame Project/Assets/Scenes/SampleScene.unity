@@ -5371,7 +5371,7 @@ PlatformEffector2D:
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 1
-  m_SurfaceArc: 180
+  m_SurfaceArc: 1
   m_UseSideFriction: 1
   m_UseSideBounce: 0
   m_SideArc: 0
@@ -11022,7 +11022,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1272190742}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ladders
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11837,6 +11837,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   ceilingCheckRadius: 0.1
+  climbWallCheckRadius: 0.644
   noFriction: {fileID: 6200000, guid: de04ab06f60e0134495d45fc2ccd4127, type: 2}
   antiSliding: {fileID: 6200000, guid: 78df21001714d0840bba310b2db69f9c, type: 2}
   runParticles: {fileID: 306706331}
@@ -17945,7 +17946,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 0.05
 --- !u!1 &1971892647
 GameObject:
   m_ObjectHideFlags: 0
@@ -18065,7 +18066,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 1.2}
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 0.05
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

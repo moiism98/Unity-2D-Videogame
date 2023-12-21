@@ -76,6 +76,7 @@ public class PlayerController : MonoBehaviour
     [Header("Climb")]
     private bool isClimbing = false;
     private Ladder ladder;
+    [SerializeField] [Range(0f, 1f)] private float climbWallCheckRadius;
 
     [Header("Slopes materials")]
 
@@ -136,7 +137,7 @@ public class PlayerController : MonoBehaviour
     public void Walk(InputAction.CallbackContext walk)
     {
         if(!isClimbing)
-            movement = walk.ReadValue<Vector2>().x;
+            SetMovement(walk.ReadValue<Vector2>().x);
 
         gameController.SetControllerInUse(walk.control.device.displayName);
     }
@@ -162,7 +163,7 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext jump)
     {
-        if(jumps < totalJumps && !isCrouching) // we only can jump if we have jumps remaining and we are not crouching!
+        if(jumps < totalJumps && !isCrouching && !isClimbing) // we only can jump if we have jumps remaining, we are not crouching or climbing!
         {
             if(jump.performed) // normal jump
                 ApplyJumpForce(jumpForce);
@@ -232,9 +233,22 @@ public class PlayerController : MonoBehaviour
     public void ClimbAction(InputAction.CallbackContext climb)
     { 
         if(climb.performed)
-        {            
+        {   
+            // if we pressed the climb action button while climbing will stop the climb action again!
+
+            if(isClimbing)
+                isClimbing = !isClimbing;
+
             if(ladder != null && ladder.GetIsClimbable())
             {
+                // the player starts climbing with no moving
+
+                rb.velocity = Vector2.zero;
+
+                SetMovement(0f);
+
+                // player starts climbing at the climb point
+
                 transform.position = new Vector2(ladder.transform.position.x, ladder.transform.position.y);
 
                 SetIsClimbing(!isClimbing);
@@ -243,10 +257,9 @@ public class PlayerController : MonoBehaviour
 
                 ladder.HideControllerButton(); // and hide the button bubble
 
-                CapsuleCollider2D[] playerColliders = gameObject.GetComponents<CapsuleCollider2D>();
+                // the players body colliders are disable while it's climbing
 
-                foreach(CapsuleCollider2D playerCollider in playerColliders)
-                    playerCollider.enabled = false;
+                DisablePlayerCols();
             }
         }
 
@@ -256,9 +269,27 @@ public class PlayerController : MonoBehaviour
     public void Climb(InputAction.CallbackContext climb)
     {
         if(isClimbing)
-            movement = climb.ReadValue<Vector2>().y;
+            SetMovement(climb.ReadValue<Vector2>().y);
 
         gameController.SetControllerInUse(climb.control.device.displayName);
+    }
+    private void EnablePlayerCols()
+    {
+        CapsuleCollider2D[] playerColliders = gameObject.GetComponents<CapsuleCollider2D>();
+
+        if(!isCrouching && !isjumpingUnderPlatform)
+        {
+            foreach(CapsuleCollider2D playerCollider in playerColliders)
+                playerCollider.enabled = true;
+        }
+    }
+
+    private void DisablePlayerCols()
+    {
+        CapsuleCollider2D[] playerColliders = gameObject.GetComponents<CapsuleCollider2D>();
+
+        foreach(CapsuleCollider2D playerCollider in playerColliders)
+            playerCollider.enabled = false;
     }
 
     private void ApplyJumpForce(float jumpForce)
@@ -270,13 +301,6 @@ public class PlayerController : MonoBehaviour
         StopRunParticles();
 
         jumps++;
-
-        if(isClimbing) // jump it's the only way to cancel the climb action
-        {
-            SetIsClimbing(!isClimbing);
-
-            ladder.gameObject.SetActive(true);
-        }
     }
 
     private void CanJump() // check every frame if we can jump or not.
@@ -313,17 +337,6 @@ public class PlayerController : MonoBehaviour
             // we use the animation curve to set player's gravity based on our fall speed so our gravity it's not static on jumps
 
             rb.gravityScale = gravityCurve.Evaluate(rb.velocity.y);
-        }
-    }
-
-    private void EnablePlayerCols()
-    {
-        CapsuleCollider2D[] playerColliders = gameObject.GetComponents<CapsuleCollider2D>();
-
-        if(!isCrouching && !isjumpingUnderPlatform)
-        {
-            foreach(CapsuleCollider2D playerCollider in playerColliders)
-                playerCollider.enabled = true;
         }
     }
 
@@ -395,6 +408,10 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
 
         Gizmos.DrawWireSphere(ceilingCheck.position, ceilingCheckRadius);
+
+        Gizmos.color = Color.red;
+
+        Gizmos.DrawWireSphere(transform.position, climbWallCheckRadius);
     }
 
     private void PlayRunParticles()
