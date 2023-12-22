@@ -163,7 +163,7 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext jump)
     {
-        if(jumps < totalJumps && !isCrouching && !isClimbing) // we only can jump if we have jumps remaining, we are not crouching or climbing!
+        if(jumps < totalJumps && !isCrouching) // we only can jump if we have jumps remaining and we are not crouching !
         {
             if(jump.performed) // normal jump
                 ApplyJumpForce(jumpForce);
@@ -301,6 +301,9 @@ public class PlayerController : MonoBehaviour
         StopRunParticles();
 
         jumps++;
+
+        if(isClimbing) // jumping we disable the climb action!
+            isClimbing = !isClimbing;
     }
 
     private void CanJump() // check every frame if we can jump or not.

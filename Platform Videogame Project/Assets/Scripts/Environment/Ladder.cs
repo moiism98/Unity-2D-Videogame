@@ -35,7 +35,6 @@ public class Ladder : MonoBehaviour
                 else
                     playerController.gameObject.transform.position = climbPointCollider.transform.position;
                     
-
                 // also the player stops climbing
 
                 playerController.SetIsClimbing(!playerController.GetIsClimbing());
