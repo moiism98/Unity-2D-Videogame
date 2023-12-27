@@ -1,14 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
     [Header("Game UI")]
-    [SerializeField] private TextMeshProUGUI score;
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private int scoreTextMaxLength = 17;
     private PlayerController playerController;
     private string controllerInUse;
 
@@ -23,7 +21,9 @@ public class GameController : MonoBehaviour
 
         Gem.OnGemCollect += IncreseScore;
 
-        score.text = "0";
+        // this is when the game starts for the first time and not when there is a saved score! 
+
+        scoreText.text = SetMaxScoreLength(scoreTextMaxLength);
     }
     
     private void Update()
@@ -33,13 +33,48 @@ public class GameController : MonoBehaviour
         ladder?.ShowControllerButton(controllerInUse);
     }
 
-    private void IncreseScore(int gemValue)
+    /// <summary>
+    /// Set the score max digits to the game UI.
+    /// </summary>
+    /// <param name="maxLength"></param>
+    /// <returns></returns> <summary>
+    /// 
+    /// </summary>
+    /// <param name="maxLength"></param>
+    /// <returns></returns>
+    private string SetMaxScoreLength(int maxLength)
     {
-        int currentScore = int.Parse(score.text);
+        string score = "";
 
-        int newScore = currentScore + gemValue;
+        for(int zeros = 0; zeros < maxLength; zeros++)
+            score += "0";
 
-        score.text = newScore.ToString();
+        return score;
+    }
+
+    /// <summary>
+    /// Triggers the coroutine that increase or set the game score.
+    /// </summary>
+    /// <param name="gemValue"></param>
+    private void IncreseScore(int score)
+    {
+        StartCoroutine(SetNewScore(score)); 
+    }
+    
+    /// <summary>
+    /// Set the game score based on score points earned.
+    /// </summary>
+    /// <param name="gemValue"></param>
+    /// <returns></returns>
+    private IEnumerator SetNewScore(int score)
+    {
+        int newScore = int.Parse(scoreText.text) + score;
+            
+        string newScoreText = SetMaxScoreLength(scoreTextMaxLength - score.ToString().Length) + newScore.ToString();
+
+        yield return new WaitForSeconds(.1f);
+
+        scoreText.text = newScoreText;
     }
 
     public void SetControllerInUse(string controllerInUse)
