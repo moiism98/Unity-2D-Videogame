@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -15,7 +16,7 @@ TagManager:
   - Player
   - Platform
   - Ladder
-  - 
+  - Enemy
   - 
   - 
   - 
@@ -53,6 +54,9 @@ TagManager:
     locked: 0
   - name: Item
     uniqueID: 1548491317
+    locked: 0
+  - name: Enemy
+    uniqueID: 2606700775
     locked: 0
   - name: Player
     uniqueID: 4257236407
