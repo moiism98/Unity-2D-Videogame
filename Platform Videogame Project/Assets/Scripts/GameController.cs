@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     [Header("Game UI")]
+    [SerializeField] private GameObject earnedScore;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private int scoreTextMaxLength = 17;
     private PlayerController playerController;
@@ -17,9 +18,11 @@ public class GameController : MonoBehaviour
     {
         playerController = FindObjectOfType<PlayerController>();
 
-        // we suscribe the method to the gem event
+        // we suscribe the method to the game events
 
-        Gem.OnGemCollect += IncreseScore;
+        Gem.OnGemCollect += IncreseScore; 
+
+        EnemyController.OnEnemyDie += IncreseScore;
 
         // this is when the game starts for the first time and not when there is a saved score! 
 
@@ -75,6 +78,13 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(.1f);
 
         scoreText.text = newScoreText;
+    }
+
+    public void ShowEarnedScore(int score, Transform scorePosition)
+    {
+        earnedScore.GetComponent<TextMeshPro>().text = "+ " + score.ToString();
+
+        Instantiate(earnedScore, scorePosition.position, Quaternion.identity);
     }
 
     public void SetControllerInUse(string controllerInUse)

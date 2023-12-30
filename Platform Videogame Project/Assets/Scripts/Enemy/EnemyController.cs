@@ -1,17 +1,22 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    private GameController gameController;
+
     [Header("Enemy Action")]
     [SerializeField] private EnemyAction enemyAction = EnemyAction.walk;
+    [SerializeField] private GameObject dieAnimation;
+    public static event Action<int> OnEnemyDie;
+    [SerializeField] private int enemyScore = 100;
 
     [Header("Physics")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private float jumpForce = 5f;
+    [SerializeField] private float bounceForce = 2f;
     private float direction = 1;
 
     [Header("Timers")]
@@ -19,23 +24,24 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float stopMove = 1.5f;
 
     [Header("Layers checks")]
-    [SerializeField] private LayerMask groundMask;
+    [SerializeField] private LayerMask groundLayer;
 
     #pragma warning disable // Could be null!
     [SerializeField] private Transform groundCheck;
 
     #pragma warning disable // Could be null!
     [SerializeField] private Vector2 groundCheckSize;
-
+    
     [Header("Animations")]
     [SerializeField] private Animator animator;
     [SerializeField] private bool moveComplete;
-
-    private Transform player;
+    private PlayerController player;
 
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        gameController = FindObjectOfType<GameController>();
+
+        player = FindObjectOfType<PlayerController>();
 
         moveComplete = true;
     }
@@ -54,8 +60,19 @@ public class EnemyController : MonoBehaviour
     private void FixedUpdate()
     {
         Move();
+    }
 
-        //rb.velocity = new Vector2(direction, 0) * moveSpeed;
+    public void Die(Rigidbody2D playerRb)
+    {
+        playerRb.velocity = new Vector2(playerRb.velocity.x, this.GetBounceForce());
+
+        Destroy(gameObject);
+
+        Instantiate(dieAnimation, transform.position, Quaternion.identity);
+
+        OnEnemyDie.Invoke(enemyScore);
+
+        gameController.ShowEarnedScore(enemyScore, transform);
     }
 
     private void Move()
@@ -63,6 +80,7 @@ public class EnemyController : MonoBehaviour
         switch(enemyAction)
         {
             case EnemyAction.walk: StartCoroutine(EnemyWalk()); break;
+
             case EnemyAction.jump: StartCoroutine(EnemyJump()); break;
         }
         
@@ -97,11 +115,17 @@ public class EnemyController : MonoBehaviour
 
             moveComplete = false;
 
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            rb.velocity = new Vector2(direction * moveSpeed, jumpForce);
 
             animator.SetTrigger("Jump");
 
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(stopMove);
+
+            SetDirection(direction * -1);
+
+            rb.velocity = new Vector2(direction * moveSpeed, jumpForce);
+
+            animator.SetTrigger("Jump");
 
             moveComplete = true;
         }
@@ -109,13 +133,18 @@ public class EnemyController : MonoBehaviour
 
     private bool isGrounded()
     {
-        if(Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundMask)) return true;
+        if(Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer)) return true;
         else return false;
     }
 
-    private void SetDirection(float direction)
+    public void SetDirection(float direction)
     {
         this.direction = direction;
+    }
+
+    public float GetBounceForce()
+    {
+        return this.bounceForce;
     }
 
     private void OnDrawGizmosSelected()

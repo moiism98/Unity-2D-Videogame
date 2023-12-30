@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class Gem : MonoBehaviour, ItemInterface
 {
+    private GameController gameController;
     public static event Action<int> OnGemCollect;
     [SerializeField] private int gemValue = 1000;
-    [SerializeField] private GameObject gemScore;
+
+    private void Start()
+    {
+        gameController = FindObjectOfType<GameController>();
+    }
     public void Collect()
     {
         OnGemCollect.Invoke(gemValue);
 
         Destroy(gameObject);
 
-        gemScore.GetComponent<TextMeshPro>().text = "+ " + gemValue.ToString();
-
-        Instantiate(gemScore, transform.position, Quaternion.identity);
+        gameController.ShowEarnedScore(gemValue, transform);
     }
 }

@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     private LayerMask groundLayer;
+    [SerializeField] private LayerMask enemyLayer;
     
     [SerializeField]
     private Transform groundCheck;
@@ -111,6 +112,8 @@ public class PlayerController : MonoBehaviour
         ResetCrouch(); // this method reset the crouch animation and action when the crouch button is not pressed!
 
         CanJump(); // check every frame if we can jump or not.
+
+        BounceOnEnemy();
     }
 
     private void FixedUpdate()
@@ -404,6 +407,18 @@ public class PlayerController : MonoBehaviour
         isjumpingUnderPlatform = false;
     }
 
+    private void BounceOnEnemy()
+    {
+        Collider2D enemy = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, enemyLayer);
+
+        if(enemy != null)
+        {
+            EnemyController enemyController = enemy.gameObject.GetComponentInParent<EnemyController>();
+
+            enemyController.Die(this.GetRigidbody2D());
+        }
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.white;
@@ -449,6 +464,11 @@ public class PlayerController : MonoBehaviour
 
     public bool GetIsClimbing()
     {
-        return isClimbing;
+        return this.isClimbing;
+    }
+
+    public Rigidbody2D GetRigidbody2D()
+    {
+        return this.rb;
     }
 }
