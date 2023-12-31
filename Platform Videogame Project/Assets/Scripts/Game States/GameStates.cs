@@ -6,7 +6,7 @@ public enum ClimbPoint
 
 public enum EnemyAction
 {
-    fly,
-    jump,
-    walk
+    eagle,
+    frog,
+    dino
 }

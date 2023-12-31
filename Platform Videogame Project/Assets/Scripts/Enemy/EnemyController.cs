@@ -7,7 +7,7 @@ public class EnemyController : MonoBehaviour
     private GameController gameController;
 
     [Header("Enemy Action")]
-    [SerializeField] private EnemyAction enemyAction = EnemyAction.walk;
+    [SerializeField] private EnemyAction enemyAction = EnemyAction.dino;
     [SerializeField] private GameObject dieAnimation;
     public static event Action<int> OnEnemyDie;
     [SerializeField] private int enemyScore = 100;
@@ -15,26 +15,20 @@ public class EnemyController : MonoBehaviour
     [Header("Physics")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private float bounceForce = 2f;
-    private float direction = 1;
+    [SerializeField] private float bounceForce = 15f;
+    private float direction;
+    [SerializeField] private bool fliped = false;
 
     [Header("Timers")]
-    [SerializeField] private float moveTime = 5f;
-    [SerializeField] private float stopMove = 1.5f;
+    private float moveTime = 5f;
+    private float stopMove = 1.5f;
 
     [Header("Layers checks")]
     [SerializeField] private LayerMask groundLayer;
 
-    #pragma warning disable // Could be null!
-    [SerializeField] private Transform groundCheck;
-
-    #pragma warning disable // Could be null!
-    [SerializeField] private Vector2 groundCheckSize;
-    
     [Header("Animations")]
     [SerializeField] private Animator animator;
-    [SerializeField] private bool moveComplete;
+    private bool moveComplete;
     private PlayerController player;
 
     private void Start()
@@ -44,15 +38,18 @@ public class EnemyController : MonoBehaviour
         player = FindObjectOfType<PlayerController>();
 
         moveComplete = true;
+
+        if(fliped) 
+            this.SetDirection(1);
+        else 
+            this.SetDirection(-1);
     }
 
     private void Update()
     {
-        //direction = Mathf.Sign(player.position.x);
-
         animator.SetFloat("Horizontal", direction);
 
-        animator.SetFloat("Speed", Mathf.Abs(direction));
+        animator.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
 
         animator.SetFloat("Fall", rb.velocity.y);
     }
@@ -79,13 +76,12 @@ public class EnemyController : MonoBehaviour
     {
         switch(enemyAction)
         {
-            case EnemyAction.walk: StartCoroutine(EnemyWalk()); break;
+            case EnemyAction.dino: GetComponent<DinoBehaviour>().Move(); break;
 
-            case EnemyAction.jump: StartCoroutine(EnemyJump()); break;
+            case EnemyAction.frog: StartCoroutine(GetComponent<FrogBehaviour>().Move()); break;
         }
         
     }
-
     private IEnumerator EnemyWalk()
     {
         if(moveComplete)
@@ -108,38 +104,28 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private IEnumerator EnemyJump()
+    public void ChangeEnemyDirection()
     {
-        if(moveComplete && isGrounded())
-        {
-
-            moveComplete = false;
-
-            rb.velocity = new Vector2(direction * moveSpeed, jumpForce);
-
-            animator.SetTrigger("Jump");
-
-            yield return new WaitForSeconds(stopMove);
-
-            SetDirection(direction * -1);
-
-            rb.velocity = new Vector2(direction * moveSpeed, jumpForce);
-
-            animator.SetTrigger("Jump");
-
-            moveComplete = true;
-        }
-    }
-
-    private bool isGrounded()
-    {
-        if(Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer)) return true;
-        else return false;
+        SetDirection(GetDirection() * -1);
     }
 
     public void SetDirection(float direction)
     {
         this.direction = direction;
+    }
+    public Rigidbody2D GetRigidbody2D()
+    {
+        return this.rb;
+    }
+
+    public LayerMask GetGroundLayer()
+    {
+        return this.groundLayer;
+    }
+
+    public float GetDirection()
+    {
+        return this.direction;
     }
 
     public float GetBounceForce()
@@ -147,10 +133,8 @@ public class EnemyController : MonoBehaviour
         return this.bounceForce;
     }
 
-    private void OnDrawGizmosSelected()
+    public float GetMoveSpeed()
     {
-        Gizmos.color = Color.white;
-
-        Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
+        return this.moveSpeed;
     }
 }

@@ -5814,7 +5814,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 910869344}
-  m_Layer: 10
+  m_Layer: 6
   m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17483,26 +17483,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Frog
       objectReference: {fileID: 0}
-    - target: {fileID: 6081574924021880747, guid: bd09f07fad48dbd4d9d470f3a7ab96c1, type: 3}
-      propertyPath: stopMove
-      value: 3.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6081574924021880747, guid: bd09f07fad48dbd4d9d470f3a7ab96c1, type: 3}
-      propertyPath: moveSpeed
-      value: 2.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6081574924021880747, guid: bd09f07fad48dbd4d9d470f3a7ab96c1, type: 3}
-      propertyPath: bounceForce
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 6081574924021880747, guid: bd09f07fad48dbd4d9d470f3a7ab96c1, type: 3}
-      propertyPath: dieAnimation
-      value: 
-      objectReference: {fileID: 7970727313707624234, guid: 2f0f7f4adb2ce79499e3d6f47fae2829, type: 3}
-    - target: {fileID: 6081574924021880747, guid: bd09f07fad48dbd4d9d470f3a7ab96c1, type: 3}
-      propertyPath: groundLayer.m_Bits
-      value: 136
-      objectReference: {fileID: 0}
     - target: {fileID: 8660459032231869965, guid: bd09f07fad48dbd4d9d470f3a7ab96c1, type: 3}
       propertyPath: m_Size.x
       value: 1.0868361
@@ -17513,7 +17493,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9144653388391529359, guid: bd09f07fad48dbd4d9d470f3a7ab96c1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.05
+      value: 5.746
       objectReference: {fileID: 0}
     - target: {fileID: 9144653388391529359, guid: bd09f07fad48dbd4d9d470f3a7ab96c1, type: 3}
       propertyPath: m_LocalPosition.y
