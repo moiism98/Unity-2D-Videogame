@@ -19,16 +19,11 @@ public class EnemyController : MonoBehaviour
     private float direction;
     [SerializeField] private bool fliped = false;
 
-    [Header("Timers")]
-    private float moveTime = 5f;
-    private float stopMove = 1.5f;
-
     [Header("Layers checks")]
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Animations")]
     [SerializeField] private Animator animator;
-    private bool moveComplete;
     private PlayerController player;
 
     private void Start()
@@ -36,8 +31,6 @@ public class EnemyController : MonoBehaviour
         gameController = FindObjectOfType<GameController>();
 
         player = FindObjectOfType<PlayerController>();
-
-        moveComplete = true;
 
         if(fliped) 
             this.SetDirection(1);
@@ -50,13 +43,23 @@ public class EnemyController : MonoBehaviour
         animator.SetFloat("Horizontal", direction);
 
         animator.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
-
-        animator.SetFloat("Fall", rb.velocity.y);
     }
 
     private void FixedUpdate()
     {
         Move();
+    }
+
+    private void Move()
+    {
+        switch(enemyAction)
+        {
+            case EnemyAction.dino: GetComponent<DinoBehaviour>().Move(); break;
+
+            case EnemyAction.frog: StartCoroutine(GetComponent<FrogBehaviour>().Move()); break;
+
+            case EnemyAction.opossum: GetComponent<OpossumBehaviour>().Move(); break;
+        }
     }
 
     public void Die(Rigidbody2D playerRb)
@@ -72,36 +75,56 @@ public class EnemyController : MonoBehaviour
         gameController.ShowEarnedScore(enemyScore, transform);
     }
 
-    private void Move()
+    /// <summary>
+    /// Apply a velocity on the enemy to make it move.
+    /// </summary>
+    /// <param name="rb"></param>
+    public void ApplyVelocity(Rigidbody2D rb)
     {
-        switch(enemyAction)
-        {
-            case EnemyAction.dino: GetComponent<DinoBehaviour>().Move(); break;
-
-            case EnemyAction.frog: StartCoroutine(GetComponent<FrogBehaviour>().Move()); break;
-        }
-        
+        rb.velocity = new Vector2(GetDirection() * GetMoveSpeed(), 0);
     }
-    private IEnumerator EnemyWalk()
+    public void ApplyVelocity(Rigidbody2D rb, float jumpForce)
     {
-        if(moveComplete)
-        {
-            moveComplete = false;
+        rb.velocity = new Vector2(GetDirection() * GetMoveSpeed(), jumpForce);
+    }
 
-            rb.velocity = rb.velocity = new Vector2(direction, 0) * moveSpeed;
+    /// <summary>
+    /// Detects walls to reset enemies behaviour.
+    /// </summary>
+    /// <returns></returns>
+    public bool WallDetected(Transform checker, Vector2 checkerSize, LayerMask checkLayer)
+    {
+        if(checker != null && Physics2D.OverlapBox(checker.position, checkerSize, 0f, checkLayer))
+            return true;
+        else 
+            return false;
+    }
 
-            yield return new WaitForSeconds(moveTime);
+    /// <summary>
+    /// Detects ground to reset enemies behaviour. This functions only activates when the enemy it's on platforms.
+    /// </summary>
+    /// <returns></returns>
+    public bool GroundDetected(Transform checker, LayerMask checkLayer)
+    {
+        if(checker != null && Physics2D.Raycast(checker.position, Vector2.down, 2f, checkLayer))
+            return true;
+        else 
+            return false;
+    }
 
-            rb.velocity = Vector2.zero;
+    /// <summary>
+    /// Set walls and falls player's detector point using the dinosaur's corresponding direction. 
+    /// </summary>
+    /// <returns></returns>
+    public Transform GetUsedChecker(Transform[] checkers)
+    {
+        Transform checker;
 
-            yield return new WaitForSeconds(stopMove);
+        checker = Array.Find(checkers, chk => MathF.Truncate(transform.position.x - chk.transform.position.x).Equals(this.GetDirection() * -1));
 
-            SetDirection(direction * -1);
-
-            rb.velocity = new Vector2(direction, 0) * moveSpeed;
-
-            moveComplete = true;
-        }
+        // checker = Array.Find(checkers, chk => Mathf.Round(transform.position.x - chk.transform.position.x).Equals(this.GetDirection() * -1));
+        
+        return checker;
     }
 
     public void ChangeEnemyDirection()

@@ -6,10 +6,10 @@ public class DinoBehaviour : MonoBehaviour
 {
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private float fieldOfVision = 3f;
-
-    private EnemyController enemyController;
     [SerializeField] private Transform[] checkers;
     [SerializeField] private Vector2 checkerSize;
+    private EnemyController enemyController;
+    private Rigidbody2D dinoRb;
     private Transform checkerInUse;
     private LayerMask checkerLayer;
     private bool playerDetected = false;
@@ -17,6 +17,8 @@ public class DinoBehaviour : MonoBehaviour
     private void Start()
     {
         enemyController = GetComponent<EnemyController>();
+
+        dinoRb = GetComponent<Rigidbody2D>();
 
         GetCheckers();
     }
@@ -30,6 +32,7 @@ public class DinoBehaviour : MonoBehaviour
     {
         checkerLayer = enemyController.GetGroundLayer();
     }
+
     /// <summary>
     /// Try to detect the player every frame. If the player is detected, the dinosaur starts moving.
     /// </summary> <summary>
@@ -37,26 +40,23 @@ public class DinoBehaviour : MonoBehaviour
     /// </summary>
     private void PlayerCheck()
     {
-        checkerInUse = GetUsedChecker();
+        checkerInUse = enemyController.GetUsedChecker(checkers);
         
-        if(Physics2D.Raycast(checkerInUse.position, new Vector2(enemyController.GetDirection(), 0f), fieldOfVision, playerLayer))
+        if(checkerInUse != null && Physics2D.Raycast(checkerInUse.position, new Vector2(enemyController.GetDirection(), 0f), fieldOfVision, playerLayer))
             SetPlayerDetected(true);
     }
-
-    /// <summary>
-    /// Moves the dinosaur.
-    /// </summary>
+    
     public void Move()
     {
         if(playerDetected)
         {
-            Rigidbody2D dinoRb = enemyController.GetRigidbody2D();
+            dinoRb = enemyController.GetRigidbody2D();
 
             dinoRb.velocity = new Vector2(enemyController.GetDirection() * enemyController.GetMoveSpeed(), dinoRb.velocity.y);
 
             // check if there is a fall or wall forward
 
-            if(WallDetected() || !GroundDetected()) // if we do:
+            if(enemyController.WallDetected(checkerInUse, checkerSize, checkerLayer) || !enemyController.GroundDetected(checkerInUse, checkerLayer)) // if we do:
             {
                 // stop the dino
 
@@ -71,43 +71,6 @@ public class DinoBehaviour : MonoBehaviour
                 SetPlayerDetected(false);
             }
         }
-    }
-
-    /// <summary>
-    /// Detects walls to reset dinosaur's behaviour.
-    /// </summary>
-    /// <returns></returns>
-    private bool WallDetected()
-    {
-        if(Physics2D.OverlapBox(checkerInUse.position, checkerSize, 0f, checkerLayer))
-            return true;
-        else 
-            return false;
-    }
-
-    /// <summary>
-    /// Detects ground to reset dinosaur's behaviour. This functions only activates when the dinosaur it's on platforms.
-    /// </summary>
-    /// <returns></returns>
-    private bool GroundDetected()
-    {
-        if(Physics2D.Raycast(checkerInUse.position, Vector2.down, 1.5f, checkerLayer))
-            return true;
-        else 
-            return false;
-    }
-
-    /// <summary>
-    /// Set walls and falls player's detector point using the dinosaur's corresponding direction. 
-    /// </summary>
-    /// <returns></returns>
-    private Transform GetUsedChecker()
-    {
-        Transform checker;
-
-        checker = Array.Find(checkers, chk => Mathf.Round(transform.position.x - chk.transform.position.x) == enemyController.GetDirection() * -1);
-        
-        return checker;
     }
 
     private void SetPlayerDetected(bool playerDetected)

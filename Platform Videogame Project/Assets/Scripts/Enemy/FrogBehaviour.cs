@@ -5,6 +5,8 @@ using UnityEngine;
 public class FrogBehaviour : MonoBehaviour
 {
     private EnemyController enemyController;
+    private Animator animator;
+    private Rigidbody2D frogRb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private Vector2 groundCheckSize;
     [SerializeField] private float jumpForce = 5f;
@@ -16,7 +18,16 @@ public class FrogBehaviour : MonoBehaviour
     {
         enemyController = GetComponent<EnemyController>();
 
+        frogRb = GetComponent<Rigidbody2D>();
+
+        animator = GetComponent<Animator>();
+
         moveComplete = true;
+    }
+
+    public void Update()
+    {
+        animator.SetFloat("Fall", frogRb.velocity.y);
     }
 
     public IEnumerator Move()
@@ -25,24 +36,26 @@ public class FrogBehaviour : MonoBehaviour
         {
             moveComplete = false;
 
-            Rigidbody2D frogRb = enemyController.GetRigidbody2D();
+            enemyController.ApplyVelocity(frogRb, jumpForce);
 
-            frogRb.velocity = new Vector2(enemyController.GetDirection() * enemyController.GetMoveSpeed(), jumpForce);
-
-            GetComponent<Animator>().SetTrigger("Jump");
+            animator.SetTrigger("Jump");
 
             yield return new WaitForSeconds(stopMove);
 
             enemyController.ChangeEnemyDirection();
 
-            frogRb.velocity = new Vector2(enemyController.GetDirection() * enemyController.GetMoveSpeed(), jumpForce);
+            enemyController.ApplyVelocity(frogRb, jumpForce);
 
-            GetComponent<Animator>().SetTrigger("Jump");
+            animator.SetTrigger("Jump");
 
             moveComplete = true;
         }
     }
 
+    /// <summary>
+    /// Check if the frog is on the ground. If the frog is on the ground he can jump.
+    /// </summary>
+    /// <returns></returns>
     private bool isGrounded()
     {
         if(Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, enemyController.GetGroundLayer()))

@@ -8,5 +8,6 @@ public enum EnemyAction
 {
     eagle,
     frog,
-    dino
+    dino,
+    opossum
 }
