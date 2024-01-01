@@ -50,8 +50,6 @@ public class DinoBehaviour : MonoBehaviour
     {
         if(playerDetected)
         {
-            dinoRb = enemyController.GetRigidbody2D();
-
             dinoRb.velocity = new Vector2(enemyController.GetDirection() * enemyController.GetMoveSpeed(), dinoRb.velocity.y);
 
             // check if there is a fall or wall forward
