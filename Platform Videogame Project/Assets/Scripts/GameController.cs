@@ -1,4 +1,5 @@
 using System.Collections;
+using Microsoft.Unity.VisualStudio.Editor;
 using TMPro;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject earnedScore;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private int scoreTextMaxLength = 17;
+    [SerializeField] GameObject arrow;
+    public static bool isArrowReady = false;
     private PlayerController playerController;
     private string controllerInUse;
 
@@ -34,6 +37,8 @@ public class GameController : MonoBehaviour
         // if we are close to a ladder in the level, we can show the corresponding controller button (based in which controller are we using right now)
 
         ladder?.ShowControllerButton(controllerInUse);
+
+        arrow.SetActive(isArrowReady);
     }
 
     /// <summary>

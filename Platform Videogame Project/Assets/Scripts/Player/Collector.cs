@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class Collector : MonoBehaviour
 {
-    private void OnTriggerEnter2D(Collider2D collider)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        Gem gem = collider.GetComponent<Gem>();
+        Gem gem = collision.GetComponent<Gem>();
 
         gem?.Collect();
+
+        ArrowItem arrow = collision.GetComponent<ArrowItem>();
+
+        arrow?.Collect();
     }
 }

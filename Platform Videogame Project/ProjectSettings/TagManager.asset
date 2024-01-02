@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - Enemy
+  - Arrow
   layers:
   - Default
   - TransparentFX
@@ -57,6 +58,9 @@ TagManager:
     locked: 0
   - name: Enemy
     uniqueID: 2606700775
+    locked: 0
+  - name: Arrow
+    uniqueID: 743578315
     locked: 0
   - name: Player
     uniqueID: 4257236407

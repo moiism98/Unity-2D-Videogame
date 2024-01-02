@@ -49,14 +49,6 @@ public class EagleBehaviour : MonoBehaviour
             StartCoroutine(StaringAtPlayer());
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        PlayerController player = collision.GetComponent<PlayerController>();
-
-        //if(player != null) 
-            //player?.TakeDamage(damage);
-    }
-
     /// <summary>
     /// It's called every frame and will detect if the player is on the eagle's field of vision.
     /// On true returned will trigger the eagle's attack.

@@ -75,6 +75,17 @@ public class EnemyController : MonoBehaviour
         gameController.ShowEarnedScore(enemyScore, transform);
     }
 
+    public void Die()
+    {
+        Destroy(gameObject);
+
+        Instantiate(dieAnimation, transform.position, Quaternion.identity);
+
+        OnEnemyDie.Invoke(enemyScore);
+
+        gameController.ShowEarnedScore(enemyScore, transform);
+    }
+
     /// <summary>
     /// Apply a velocity on the enemy to make it move.
     /// </summary>

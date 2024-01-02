@@ -9,69 +9,54 @@ using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    private Animator animator;
+    [SerializeField] private Animator animator;
 
     [Header("Physics and gravity")]
 
-    [SerializeField]
-    private Rigidbody2D rb;
+    [SerializeField] private Rigidbody2D rb;
 
-    [SerializeField]
-    private AnimationCurve gravityCurve;
+    [SerializeField] private AnimationCurve gravityCurve;
     private float maxFallSpeed = 20;
 
     [Header("Movement")]
 
-    [SerializeField]
-    private float moveSpeed = 3f;
-
-    [SerializeField]
-    private float runSpeed = 6f;
+    [SerializeField] private float moveSpeed = 3f;
+    [SerializeField] private float runSpeed = 6f;
+    private float direction = 1;
     private bool isRunning = false;
 
-    [SerializeField]
-    private float crouchSpeed = 2f;
+    [SerializeField] private float crouchSpeed = 2f;
     private float movement;    
 
     [Header("Jump")]
 
-    [SerializeField]
-    private float jumpForce = 5f;
+    [SerializeField] private float jumpForce = 5f;
 
-    [SerializeField]
-    private float doubleJumpForce = 2.5f;
+    [SerializeField] private float doubleJumpForce = 2.5f;
     private int totalJumps = 2;
     private int jumps;
 
-    [SerializeField]
-    private LayerMask groundLayer;
+    [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask enemyLayer;
     
     [SerializeField]
     private Transform groundCheck;
 
-    [SerializeField]
-    private Vector2 groundCheckSize;
+    [SerializeField] private Vector2 groundCheckSize;
 
     [Header("Crouch")]
 
-    [SerializeField]
-    private Collider2D crouchCol;
+    [SerializeField] private Collider2D crouchCol;
     private bool isCrouching = false;
     private bool buttonPressed = false;
 
-    [SerializeField]
-    private Transform ceilingCheck;
+    [SerializeField] private Transform ceilingCheck;
 
-    [SerializeField]
-    private LayerMask ceilingLayer;
+    [SerializeField] private LayerMask ceilingLayer;
 
-    [SerializeField]
-    private LayerMask platformLayer;
+    [SerializeField] private LayerMask platformLayer;
 
-    [SerializeField]
-    private float ceilingCheckRadius = .10f;
+    [SerializeField] private float ceilingCheckRadius = .10f;
     private bool isjumpingUnderPlatform = false;
 
     [Header("Climb")]
@@ -79,13 +64,12 @@ public class PlayerController : MonoBehaviour
     private Ladder ladder;
     [SerializeField] [Range(0f, 1f)] private float climbWallCheckRadius;
 
+    [Header("Shoot")]
+    [SerializeField] private GameObject arrowPrefab;
+
     [Header("Slopes materials")]
-
-    [SerializeField]
-    private PhysicsMaterial2D noFriction;
-
-    [SerializeField]
-    private PhysicsMaterial2D antiSliding;
+    [SerializeField] private PhysicsMaterial2D noFriction;
+    [SerializeField] private PhysicsMaterial2D antiSliding;
 
     [Header("Particles effect")]
     [SerializeField] private ParticleSystem runParticles;
@@ -101,7 +85,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        animator.SetFloat("Horizontal", movement);
+        animator.SetFloat("Horizontal", direction);
 
         animator.SetFloat("Speed", Mathf.Abs(movement));
 
@@ -136,11 +120,15 @@ public class PlayerController : MonoBehaviour
             EnablePlayerCols();
         }
     }
-
     public void Walk(InputAction.CallbackContext walk)
     {
         if(!isClimbing)
+        {
             SetMovement(walk.ReadValue<Vector2>().x);
+
+            if(walk.performed)
+                direction = walk.ReadValue<Vector2>().x;
+        }
 
         gameController.SetControllerInUse(walk.control.device.displayName);
     }
@@ -419,6 +407,23 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void Shoot(InputAction.CallbackContext shoot)
+    {
+        if(shoot.performed)
+        {
+            if(GameController.isArrowReady)
+                ShootArrow();
+        }
+    }
+
+    private void ShootArrow()
+    {
+        GameController.isArrowReady = false;
+        
+        Instantiate(arrowPrefab, transform.position, arrowPrefab.transform.rotation);
+
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.white;
@@ -470,5 +475,10 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D GetRigidbody2D()
     {
         return this.rb;
+    }
+
+    public float GetDirection()
+    {
+        return this.direction;
     }
 }
