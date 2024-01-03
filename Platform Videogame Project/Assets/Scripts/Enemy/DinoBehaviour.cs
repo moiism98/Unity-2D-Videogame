@@ -54,7 +54,7 @@ public class DinoBehaviour : MonoBehaviour
 
             // check if there is a fall or wall forward
 
-            if(enemyController.WallDetected(checkerInUse, checkerSize, checkerLayer) || !enemyController.GroundDetected(checkerInUse, checkerLayer)) // if we do:
+            if(enemyController.WallDetected(checkerInUse, checkerSize, checkerLayer) || !enemyController.GroundDetected(checkerInUse, checkerLayer, 2f)) // if we do:
             {
                 // stop the dino
 

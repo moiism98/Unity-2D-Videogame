@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EnemyController : MonoBehaviour
 {
@@ -8,9 +9,9 @@ public class EnemyController : MonoBehaviour
 
     [Header("Enemy Action")]
     [SerializeField] private EnemyAction enemyAction = EnemyAction.dino;
-    [SerializeField] private GameObject dieAnimation;
     public static event Action<int> OnEnemyDie;
     [SerializeField] private int enemyScore = 100;
+    private int damage = 1;
 
     [Header("Physics")]
     [SerializeField] private Rigidbody2D rb;
@@ -19,8 +20,33 @@ public class EnemyController : MonoBehaviour
     private float direction;
     [SerializeField] private bool fliped = false;
 
+    [Header("Enemy Death")]
+    [SerializeField] private GameObject dieAnimation;
+    [SerializeField] GameObject hitPoint;
+
+    [Header("Enemy Attack")]
+    #region 
+    [HideInInspector] public Transform damagePoint;
+    [HideInInspector] public DamageCollider damageCollider = DamageCollider.circle;
+
+        #region
+        [HideInInspector] public float damagePointRadius = .25f;
+        #endregion
+
+        #region
+        [HideInInspector] public CapsuleDirection2D capsuleDirection = CapsuleDirection2D.Horizontal;
+        [HideInInspector] public Vector2 capsuleSize;
+        #endregion
+
+        #region
+        [HideInInspector] public Vector2 boxSize;
+        #endregion
+
+    #endregion
+
     [Header("Layers checks")]
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask playerLayer;
 
     [Header("Animations")]
     [SerializeField] private Animator animator;
@@ -43,6 +69,12 @@ public class EnemyController : MonoBehaviour
         animator.SetFloat("Horizontal", direction);
 
         animator.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
+
+        if(player.transform.position.y > hitPoint.transform.position.y)
+            hitPoint.SetActive(true);
+        else hitPoint.SetActive(false);
+
+        HitPlayer();   
     }
 
     private void FixedUpdate()
@@ -86,6 +118,27 @@ public class EnemyController : MonoBehaviour
         gameController.ShowEarnedScore(enemyScore, transform);
     }
 
+    private void HitPlayer()
+    {
+        Collider2D player = null;
+
+        switch(damageCollider)
+        {
+            case DamageCollider.circle: player = Physics2D.OverlapCircle(transform.position, damagePointRadius, playerLayer); break;
+            case DamageCollider.capsule: player = Physics2D.OverlapCapsule(transform.position, capsuleSize, capsuleDirection, 0f, playerLayer); break;
+            case DamageCollider.box: player = Physics2D.OverlapBox(transform.position, boxSize, playerLayer); break;
+        }
+        
+
+        if(player != null)
+        {
+            PlayerController playerControler = player.GetComponent<PlayerController>();
+
+            if(playerControler != null)
+                StartCoroutine(playerControler.TakeDamage(damage));
+        }
+    }
+
     /// <summary>
     /// Apply a velocity on the enemy to make it move.
     /// </summary>
@@ -115,9 +168,9 @@ public class EnemyController : MonoBehaviour
     /// Detects ground to reset enemies behaviour. This functions only activates when the enemy it's on platforms.
     /// </summary>
     /// <returns></returns>
-    public bool GroundDetected(Transform checker, LayerMask checkLayer)
+    public bool GroundDetected(Transform checker, LayerMask checkLayer, float distance)
     {
-        if(checker != null && Physics2D.Raycast(checker.position, Vector2.down, 2f, checkLayer))
+        if(checker != null && Physics2D.Raycast(checker.position, Vector2.down, distance, checkLayer))
             return true;
         else 
             return false;
@@ -170,5 +223,23 @@ public class EnemyController : MonoBehaviour
     public float GetMoveSpeed()
     {
         return this.moveSpeed;
+    }
+
+    public DamageCollider GetDamageCollider()
+    {
+        return this.damageCollider;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.white;
+
+        switch(damageCollider)
+        {
+            case DamageCollider.circle: Gizmos.DrawWireSphere(damagePoint.position, damagePointRadius); break;
+            case DamageCollider.capsule: Gizmos.DrawWireCube(damagePoint.position, capsuleSize); break;
+            case DamageCollider.box: Gizmos.DrawWireCube(damagePoint.position, boxSize); break;
+        }
+        
     }
 }

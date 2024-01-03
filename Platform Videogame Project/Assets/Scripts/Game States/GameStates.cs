@@ -11,3 +11,10 @@ public enum EnemyAction
     dino,
     opossum
 }
+
+public enum DamageCollider
+{
+    circle,
+    capsule,
+    box
+}

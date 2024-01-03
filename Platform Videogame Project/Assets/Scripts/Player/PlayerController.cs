@@ -1,61 +1,45 @@
 using System;
 using System.Collections;
-using JetBrains.Annotations;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Diagnostics;
 using UnityEngine.InputSystem;
-using UnityEngine.Tilemaps;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Animator animator;
 
     [Header("Physics and gravity")]
-
     [SerializeField] private Rigidbody2D rb;
-
     [SerializeField] private AnimationCurve gravityCurve;
     private float maxFallSpeed = 20;
 
     [Header("Movement")]
-
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float runSpeed = 6f;
     private float direction = 1;
     private bool isRunning = false;
-
     [SerializeField] private float crouchSpeed = 2f;
     private float movement;    
 
+    [Header("Health")]
+    [SerializeField] private int maxHealth = 3;
+    private int health;
+    private bool isHurt = false;
+
     [Header("Jump")]
-
     [SerializeField] private float jumpForce = 5f;
-
     [SerializeField] private float doubleJumpForce = 2.5f;
     private int totalJumps = 2;
     private int jumps;
-
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private LayerMask enemyLayer;
-    
-    [SerializeField]
-    private Transform groundCheck;
-
+    [SerializeField] private Transform groundCheck;
     [SerializeField] private Vector2 groundCheckSize;
 
     [Header("Crouch")]
-
     [SerializeField] private Collider2D crouchCol;
     private bool isCrouching = false;
     private bool buttonPressed = false;
-
     [SerializeField] private Transform ceilingCheck;
-
     [SerializeField] private LayerMask ceilingLayer;
-
     [SerializeField] private LayerMask platformLayer;
-
     [SerializeField] private float ceilingCheckRadius = .10f;
     private bool isjumpingUnderPlatform = false;
 
@@ -81,6 +65,8 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         gameController = FindObjectOfType<GameController>();
+
+        health = maxHealth;
     }
 
     private void Update()
@@ -93,11 +79,11 @@ public class PlayerController : MonoBehaviour
 
         animator.SetBool("Climbing", isClimbing);
 
+        animator.SetBool("IsHurt", isHurt);
+
         ResetCrouch(); // this method reset the crouch animation and action when the crouch button is not pressed!
 
         CanJump(); // check every frame if we can jump or not.
-
-        BounceOnEnemy();
     }
 
     private void FixedUpdate()
@@ -119,6 +105,9 @@ public class PlayerController : MonoBehaviour
         
             EnablePlayerCols();
         }
+
+        if(isHurt)
+            rb.AddForce(new Vector2(-direction * jumpForce, Mathf.Abs(direction) * 1.5f), ForceMode2D.Impulse);
     }
     public void Walk(InputAction.CallbackContext walk)
     {
@@ -156,7 +145,7 @@ public class PlayerController : MonoBehaviour
     {
         if(jumps < totalJumps && !isCrouching) // we only can jump if we have jumps remaining and we are not crouching !
         {
-            if(jump.performed) // normal jump
+            if(jump.performed && !isHurt) // normal jump
                 ApplyJumpForce(jumpForce);
             else if(jump.canceled)
                 ApplyJumpForce(doubleJumpForce);
@@ -171,7 +160,7 @@ public class PlayerController : MonoBehaviour
 
     public void Crouch(InputAction.CallbackContext crouch)
     {
-        if(!isClimbing) // if we are not climbing we can crouch
+        if(!isClimbing && !isHurt) // if we are not climbing we can crouch
         {
             if(crouch.performed) // if we're pressing the crouch button.
             {
@@ -395,18 +384,6 @@ public class PlayerController : MonoBehaviour
         isjumpingUnderPlatform = false;
     }
 
-    private void BounceOnEnemy()
-    {
-        Collider2D enemy = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, enemyLayer);
-
-        if(enemy != null)
-        {
-            EnemyController enemyController = enemy.gameObject.GetComponentInParent<EnemyController>();
-
-            enemyController.Die(this.GetRigidbody2D());
-        }
-    }
-
     public void Shoot(InputAction.CallbackContext shoot)
     {
         if(shoot.performed)
@@ -414,6 +391,24 @@ public class PlayerController : MonoBehaviour
             if(GameController.isArrowReady)
                 ShootArrow();
         }
+    }
+
+    public IEnumerator TakeDamage(int damage)
+    {
+        isHurt = true;
+
+        health -= damage;
+
+        if(health <= 0) Die();
+
+        yield return new WaitForSeconds(.25f);
+
+        isHurt = false;
+    }
+
+    private void Die()
+    {
+        Debug.Log("Player die!");
     }
 
     private void ShootArrow()

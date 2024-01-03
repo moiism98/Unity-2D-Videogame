@@ -43,6 +43,6 @@ public class OpossumBehaviour : MonoBehaviour
 
     private bool GroundDetected()
     {
-        return enemyController.GroundDetected(checkInUse, enemyController.GetGroundLayer());
+        return enemyController.GroundDetected(checkInUse, enemyController.GetGroundLayer(), 2f);
     }
 }

@@ -75,10 +75,7 @@ public class EagleBehaviour : MonoBehaviour
     private void IsCloseToTheGround()
     {
         if(!resetPosition)
-        {
-            if(Physics2D.Raycast(transform.position, Vector2.down, 1.5f, enemyController.GetGroundLayer()))
-                resetPosition = true;
-        }
+            resetPosition = enemyController.GroundDetected(transform, enemyController.GetGroundLayer(), 1.25f);
     }
 
     /// <summary>
