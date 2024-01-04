@@ -59,7 +59,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private ParticleSystem runParticles;
     [SerializeField] private ParticleSystem jumpParticles;
     private bool activateLandingParticles = false;
-
     private GameController gameController;
 
     private void Start()
@@ -84,6 +83,8 @@ public class PlayerController : MonoBehaviour
         ResetCrouch(); // this method reset the crouch animation and action when the crouch button is not pressed!
 
         CanJump(); // check every frame if we can jump or not.
+
+        CapPlayerHealth();
     }
 
     private void FixedUpdate()
@@ -393,6 +394,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void CapPlayerHealth()
+    {
+        if(this.GetHealth() >= this.GetMaxHealth())
+        {
+            this.SetHealth(this.GetMaxHealth());
+        }
+    }
+
     public IEnumerator TakeDamage(int damage)
     {
         if(!isHurt)
@@ -400,6 +409,8 @@ public class PlayerController : MonoBehaviour
             isHurt = true;
 
             health -= damage;
+
+            gameController.UpdatePlayerHealth(health); // change the player's health UI based on his current health
 
             if(health <= 0) Die();
 
@@ -465,6 +476,11 @@ public class PlayerController : MonoBehaviour
         this.movement = movement;
     }
 
+    public void SetHealth(int health)
+    {
+        this.health = health;
+    }
+
     public bool GetIsClimbing()
     {
         return this.isClimbing;
@@ -483,5 +499,10 @@ public class PlayerController : MonoBehaviour
     public int GetMaxHealth()
     {
         return this.maxHealth;
+    }
+
+    public int GetHealth()
+    {
+        return this.health;
     }
 }

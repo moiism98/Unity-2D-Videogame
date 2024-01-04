@@ -18,3 +18,9 @@ public enum DamageCollider
     capsule,
     box
 }
+
+public enum HeartType
+{
+    heart, 
+    emptyHeart
+}

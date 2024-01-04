@@ -13,5 +13,9 @@ public class Collector : MonoBehaviour
         ArrowItem arrow = collision.GetComponent<ArrowItem>();
 
         arrow?.Collect();
+
+        Heart heart = collision.GetComponent<Heart>();
+
+        heart?.Collect();
     }
 }
