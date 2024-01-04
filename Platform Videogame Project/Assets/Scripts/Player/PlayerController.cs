@@ -395,15 +395,18 @@ public class PlayerController : MonoBehaviour
 
     public IEnumerator TakeDamage(int damage)
     {
-        isHurt = true;
+        if(!isHurt)
+        {
+            isHurt = true;
 
-        health -= damage;
+            health -= damage;
 
-        if(health <= 0) Die();
+            if(health <= 0) Die();
 
-        yield return new WaitForSeconds(.25f);
+            yield return new WaitForSeconds(.25f);
 
-        isHurt = false;
+            isHurt = false;
+        }
     }
 
     private void Die()
@@ -475,5 +478,10 @@ public class PlayerController : MonoBehaviour
     public float GetDirection()
     {
         return this.direction;
+    }
+
+    public int GetMaxHealth()
+    {
+        return this.maxHealth;
     }
 }
