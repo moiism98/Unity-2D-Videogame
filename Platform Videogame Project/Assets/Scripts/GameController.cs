@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour
         [SerializeField] private GameObject heart;
         [SerializeField] private GameObject emptyHeart;
     public static bool isArrowReady = false;
+    private bool isHealing = false;
     private PlayerController playerController;
     private string controllerInUse;
 
@@ -133,13 +134,16 @@ public class GameController : MonoBehaviour
         if(health < playerController.GetMaxHealth()) // 2 <= 3
         {
             UIHeart[] hearts = healthContainer.GetComponentsInChildren<UIHeart>();
+            
+            if(health >= 0)
+            {
+                UIHeart heart = hearts[health]; // if heart is 2, we'll take the last array's heart
 
-            UIHeart heart = hearts[health]; // if heart is 2, we'll take the last array's heart
-
-            if(heart.GetHeartType().Equals(HeartType.heart)) // if the heart is the regular one will replace it for the empty one (player got hurted)
-                heart.SetHeartType(HeartType.emptyHeart);
-            else // if not, will replace it with the regular one (player is now healing with a heart item)
-                heart.SetHeartType(HeartType.heart);
+                if(heart.GetHeartType().Equals(HeartType.heart)) // if the heart is the regular one will replace it for the empty one (player got hurted)
+                    heart.SetHeartType(HeartType.emptyHeart);
+                else // if not, will replace it with the regular one (player is now healing with a heart item)
+                    heart.SetHeartType(HeartType.heart);
+            }
         }
     }
 
@@ -150,12 +154,25 @@ public class GameController : MonoBehaviour
     /// 
     /// </summary>
     /// <param name="health"></param>
-    private void HealPlayer(int health)
+    private void HealPlayer(int health) // this method has to call a coroutine, player is healing sometimes twice with a single heart!
     {
-        UpdatePlayerHealth(playerController.GetHealth()); // change the UI
+        StartCoroutine(HealCoroutine(health));
+    }
 
-        playerController.SetHealth(playerController.GetHealth() + health); // and change the player's health value adding 1 health point.
+    private IEnumerator HealCoroutine(int health)
+    {
+        if(!isHealing)
+        {
+            isHealing = true;
 
+            UpdatePlayerHealth(playerController.GetHealth()); // change the UI
+
+            playerController.SetHealth(playerController.GetHealth() + health); // and change the player's health value adding 1 health point.
+
+            yield return new WaitForSeconds(.15f);
+
+            isHealing = false;
+        }
     }
     public void SetControllerInUse(string controllerInUse)
     {

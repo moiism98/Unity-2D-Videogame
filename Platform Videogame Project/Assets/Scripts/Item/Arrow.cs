@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Arrow : MonoBehaviour
@@ -8,7 +5,6 @@ public class Arrow : MonoBehaviour
     [SerializeField] private float speed = 3f;
     private float direction;
     private Rigidbody2D rb;
-
     private Animator animator;
     
     void Start()
@@ -18,6 +14,8 @@ public class Arrow : MonoBehaviour
         animator = GetComponent<Animator>();
 
         direction = FindObjectOfType<PlayerController>().GetDirection();
+
+        Destroy(gameObject, 15f);
     }
 
     private void Update()
@@ -34,9 +32,11 @@ public class Arrow : MonoBehaviour
     {
         EnemyController enemy = collision.GetComponent<EnemyController>();
 
-        enemy?.Die();
-        
-        if(!collision.CompareTag("Player"))
+        if(enemy != null)
+        {
             Destroy(gameObject);
+
+            enemy.Die();
+        }
     }
 }

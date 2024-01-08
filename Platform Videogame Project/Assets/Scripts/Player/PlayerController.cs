@@ -397,9 +397,7 @@ public class PlayerController : MonoBehaviour
     private void CapPlayerHealth()
     {
         if(this.GetHealth() >= this.GetMaxHealth())
-        {
             this.SetHealth(this.GetMaxHealth());
-        }
     }
 
     public IEnumerator TakeDamage(int damage)
@@ -410,7 +408,7 @@ public class PlayerController : MonoBehaviour
 
             health -= damage;
 
-            gameController.UpdatePlayerHealth(health); // change the player's health UI based on his current health
+            gameController.UpdatePlayerHealth(this.GetHealth()); // change the player's health UI based on his current health
 
             if(health <= 0) Die();
 
