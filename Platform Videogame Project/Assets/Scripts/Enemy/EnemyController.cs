@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class EnemyController : MonoBehaviour
 {
@@ -23,6 +21,8 @@ public class EnemyController : MonoBehaviour
     [Header("Enemy Death")]
     [SerializeField] private GameObject dieAnimation;
     [SerializeField] GameObject hitPoint;
+    [SerializeField] GameObject heartPrefab;
+    [SerializeField] [Range(0, 100)] private int dropProbability;
 
     [Header("Enemy Attack")]
     #region 
@@ -102,6 +102,8 @@ public class EnemyController : MonoBehaviour
 
         Instantiate(dieAnimation, transform.position, Quaternion.identity);
 
+        DropHeart();
+
         OnEnemyDie.Invoke(enemyScore);
 
         gameController.ShowEarnedScore(enemyScore, transform);
@@ -113,9 +115,24 @@ public class EnemyController : MonoBehaviour
 
         Instantiate(dieAnimation, transform.position, Quaternion.identity);
 
+        DropHeart();
+
         OnEnemyDie.Invoke(enemyScore);
 
         gameController.ShowEarnedScore(enemyScore, transform);
+    }
+
+    /// <summary>
+    /// Calculate a heart spawn probability when an enemy die.
+    /// </summary> <summary>
+    /// 
+    /// </summary>
+    private void DropHeart()
+    {
+        int randomProbability = UnityEngine.Random.Range(0, 101);
+
+        if(randomProbability <= dropProbability)
+            Instantiate(heartPrefab, transform.position, Quaternion.identity);
     }
 
     private void HitPlayer()

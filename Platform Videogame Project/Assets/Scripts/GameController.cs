@@ -13,7 +13,12 @@ public class GameController : MonoBehaviour
         [Header("Player Health")]
         [SerializeField] private GameObject healthContainer;
         [SerializeField] private GameObject heart;
-        [SerializeField] private GameObject emptyHeart;
+
+        [Header("Player Lifes")]
+        [SerializeField] private TextMeshProUGUI lifesText;
+        [SerializeField] private int playerLifes = 0;
+        [SerializeField] private int fruits4lifes = 3;
+        [SerializeField] private int fruits = 0;
     public static bool isArrowReady = false;
     private bool isHealing = false;
     private PlayerController playerController;
@@ -34,11 +39,15 @@ public class GameController : MonoBehaviour
 
         Heart.OnHeartCollect += HealPlayer;
 
+        Fruit.OnFruitCollect += AddFruit;
+
         EnemyController.OnEnemyDie += IncreseScore;
 
-        // this is when the game starts for the first time and not when there is a saved score! 
+        // this is when the game starts for the first time and not when there is a saved values! 
 
         scoreText.text = SetMaxScoreLength(scoreTextMaxLength);
+
+        lifesText.text = playerLifes.ToString();
     }
     
     private void Update()
@@ -48,6 +57,10 @@ public class GameController : MonoBehaviour
         ladder?.ShowControllerButton(controllerInUse);
 
         arrow.SetActive(isArrowReady);
+
+        FruitsForLifes();
+
+        lifesText.text = playerLifes.ToString();
     }
 
     /// <summary>
@@ -174,6 +187,39 @@ public class GameController : MonoBehaviour
             isHealing = false;
         }
     }
+
+    /// <summary>
+    /// Add 1 on fruits collected.
+    /// </summary>
+    /// <param name="fruitScore"></param> <summary>
+    /// 
+    /// </summary>
+    /// <param name="fruitScore"></param>
+    private void AddFruit(int fruitScore)
+    {
+        fruits++;
+
+        IncreseScore(fruitScore);
+    }
+
+    /// <summary>
+    /// Calculate when the player has collected some amount of fruits and changes it for player lifes.
+    /// </summary> <summary>
+    /// 
+    /// </summary>
+    private void FruitsForLifes()
+    {
+        if(fruits >= fruits4lifes)
+        {
+            fruits = 0;
+
+            int currentLifes = int.Parse(lifesText.text);
+
+            currentLifes++;
+
+            SetPlayerLifes(currentLifes);
+        }
+    }
     public void SetControllerInUse(string controllerInUse)
     {
         this.controllerInUse = controllerInUse;
@@ -182,5 +228,10 @@ public class GameController : MonoBehaviour
     public void SetLadder(Ladder ladder)
     {
         this.ladder = ladder;
+    }
+
+    public void SetPlayerLifes(int playerLifes)
+    {
+        this.playerLifes = playerLifes;
     }
 }

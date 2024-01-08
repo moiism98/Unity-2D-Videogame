@@ -236,6 +236,8 @@ MonoBehaviour:
   fliped: 0
   dieAnimation: {fileID: 7970727313707624234, guid: 2f0f7f4adb2ce79499e3d6f47fae2829, type: 3}
   hitPoint: {fileID: 4281730928291254345}
+  heartPrefab: {fileID: 5401333328378446738, guid: 10f9a8b2ab57629438ca7303e2da96a0, type: 3}
+  dropProbability: 25
   damagePoint: {fileID: 5752747133291522246}
   damageCollider: 0
   damagePointRadius: 0.45

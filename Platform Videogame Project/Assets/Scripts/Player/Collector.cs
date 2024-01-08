@@ -17,5 +17,9 @@ public class Collector : MonoBehaviour
         Heart heart = collision.GetComponent<Heart>();
 
         heart?.Collect();
+
+        Fruit fruit = collision.GetComponent<Fruit>();
+
+        fruit?.Collect();
     }
 }
