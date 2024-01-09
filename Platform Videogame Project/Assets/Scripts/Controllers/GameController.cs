@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private int scoreTextMaxLength = 17;
     [SerializeField] GameObject arrow;
+    [SerializeField] GameObject gameOverScreen;
 
         [Header("Player Health")]
         [SerializeField] private GameObject healthContainer;
@@ -29,6 +30,8 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        gameOverScreen.SetActive(false);
+
         playerController = FindObjectOfType<PlayerController>();
 
         SetPlayerHealth();
@@ -219,6 +222,13 @@ public class GameController : MonoBehaviour
 
             SetPlayerLifes(currentLifes);
         }
+    }
+
+    public void ShowGameOverMenu()
+    {
+        Time.timeScale = 0f;
+
+        gameOverScreen.SetActive(true);
     }
     public void SetControllerInUse(string controllerInUse)
     {

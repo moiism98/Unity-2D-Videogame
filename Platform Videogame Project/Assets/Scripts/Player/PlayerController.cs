@@ -420,7 +420,7 @@ public class PlayerController : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log("Player die!");
+        gameController.ShowGameOverMenu();
     }
 
     private void ShootArrow()
