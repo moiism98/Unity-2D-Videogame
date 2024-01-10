@@ -51,6 +51,9 @@ TagManager:
   - name: MidBackground
     uniqueID: 1706692711
     locked: 0
+  - name: Ground
+    uniqueID: 840625269
+    locked: 0
   - name: Ladder
     uniqueID: 3411978721
     locked: 0
@@ -62,6 +65,9 @@ TagManager:
     locked: 0
   - name: Arrow
     uniqueID: 743578315
+    locked: 0
+  - name: Decoration
+    uniqueID: 939553307
     locked: 0
   - name: Player
     uniqueID: 4257236407
