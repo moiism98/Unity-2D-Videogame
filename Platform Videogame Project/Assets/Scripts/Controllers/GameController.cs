@@ -1,7 +1,8 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     [Header("Game UI")]
@@ -9,7 +10,16 @@ public class GameController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private int scoreTextMaxLength = 17;
     [SerializeField] GameObject arrow;
-    [SerializeField] GameObject gameOverScreen;
+
+        [Header("Pause UI")]
+        [SerializeField] GameObject pauseScreen;
+        [SerializeField] private Button pausedSelectedButton;
+        public static bool isGamePaused = false;
+
+        [Header("Game Over UI")]
+        [SerializeField] GameObject gameOverScreen;
+        public static bool isGameOver = false;
+
 
         [Header("Player Health")]
         [SerializeField] private GameObject healthContainer;
@@ -31,6 +41,8 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         gameOverScreen.SetActive(false);
+
+        pauseScreen.SetActive(isGamePaused);
 
         playerController = FindObjectOfType<PlayerController>();
 
@@ -64,6 +76,45 @@ public class GameController : MonoBehaviour
         FruitsForLifes();
 
         lifesText.text = playerLifes.ToString();
+    }
+
+    public void Pause(InputAction.CallbackContext pause)
+    {
+        if(!isGameOver)
+        {
+            if(pause.performed)
+                ShowPauseMenu();
+        }
+
+        SetControllerInUse(pause.control.device.displayName);
+    }
+
+    private void ShowPauseMenu()
+    {
+        isGamePaused = !isGamePaused;
+
+        // we have to enable/disable the player input because when the game it's paused player's action can still be triggered
+
+        // and we can see how the player's sprite changes!
+
+        PlayerInput playerInput = playerController.GetPlayerInput();
+
+        playerInput.enabled = !isGamePaused;
+
+        if(isGamePaused)
+        {
+            pauseScreen.SetActive(true);
+
+            pausedSelectedButton.Select(); // every time we pause the game put this button as first button selected!
+
+            Time.timeScale = 0f;
+        }
+        else 
+        {
+            pauseScreen.SetActive(false);
+
+            Time.timeScale = 1f;
+        }
     }
 
     /// <summary>
@@ -229,6 +280,8 @@ public class GameController : MonoBehaviour
         Time.timeScale = 0f;
 
         gameOverScreen.SetActive(true);
+
+        isGameOver = true;
     }
     public void SetControllerInUse(string controllerInUse)
     {

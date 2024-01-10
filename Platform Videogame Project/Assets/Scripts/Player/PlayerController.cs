@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private AnimationCurve gravityCurve;
     private float maxFallSpeed = 20;
+    [Header("Player Inputs")]
+    private PlayerInput playerInput;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 3f;
@@ -63,6 +65,8 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        playerInput = GetComponent<PlayerInput>();
+
         gameController = FindObjectOfType<GameController>();
 
         health = maxHealth;
@@ -207,12 +211,14 @@ public class PlayerController : MonoBehaviour
             if(AbovePlatform()) // we check if we are above a platform so we can pass through it.
                 StartCoroutine(JumpUnderPlatform());
         }
+        
 
         gameController.SetControllerInUse(passThroughPlatform.control.device.displayName);
     }
 
     public void ClimbAction(InputAction.CallbackContext climb)
     { 
+        
         if(climb.performed)
         {   
             // if we pressed the climb action button while climbing will stop the climb action again!
@@ -249,6 +255,7 @@ public class PlayerController : MonoBehaviour
 
     public void Climb(InputAction.CallbackContext climb)
     {
+        
         if(isClimbing)
             SetMovement(climb.ReadValue<Vector2>().y);
 
@@ -477,6 +484,11 @@ public class PlayerController : MonoBehaviour
     public void SetHealth(int health)
     {
         this.health = health;
+    }
+
+    public PlayerInput GetPlayerInput()
+    {
+        return this.playerInput;
     }
 
     public bool GetIsClimbing()
