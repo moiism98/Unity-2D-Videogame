@@ -4,15 +4,27 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
+    [SerializeField] private RuntimeAnimatorController[] animatorControllers;
+    [SerializeField] private Animator animator; // action animator which shows what UI should show to the player (keyboard, xbox or ps UI)
+    private DeviceController deviceController;
     private PlayerController playerController;
+    
     private void Start()
     {
         playerController = FindObjectOfType<PlayerController>();
+
+        deviceController = FindObjectOfType<DeviceController>();
     }
 
     private void Update()
     {
-        
+        deviceController.ShowDeviceUI(animator, animatorControllers);
+    }
+
+    public void PressToStartGame(InputAction.CallbackContext press)
+    {
+        if(press.performed)
+            SceneManager.LoadScene("GameScene");
     }
 
     public void ResumeGame()
@@ -43,5 +55,4 @@ public class MenuController : MonoBehaviour
     {
         Application.Quit();
     }
-
 }
