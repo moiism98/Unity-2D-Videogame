@@ -12,14 +12,19 @@ public class DeviceController : MonoBehaviour
     void Update()
     {   
         DetectDeviceInUse();
+
+        Debug.Log(playerInput.currentActionMap);
     }
 
     private void DetectDeviceInUse()
     {
         foreach(InputDevice device in playerInput.devices)
            deviceInUse = device.displayName;
+    }
 
-        Debug.Log(deviceInUse);
+    public void UpdateGameActions(string actionMap)
+    {
+        playerInput.SwitchCurrentActionMap(actionMap);
     }
 
     public void ShowDeviceUI(Animator animator, RuntimeAnimatorController[] animatorControllers)

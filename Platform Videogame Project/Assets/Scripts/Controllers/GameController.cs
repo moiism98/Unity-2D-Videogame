@@ -32,7 +32,10 @@ public class GameController : MonoBehaviour
         [SerializeField] private int fruits = 0;
     public static bool isArrowReady = false;
     private bool isHealing = false;
+
+    [Header("Controllers")]
     private PlayerController playerController;
+    private DeviceController deviceController;
     private string controllerInUse;
 
     [Header("Climb variables")]
@@ -45,6 +48,8 @@ public class GameController : MonoBehaviour
         pauseScreen.SetActive(isGamePaused);
 
         playerController = FindObjectOfType<PlayerController>();
+
+        deviceController = FindObjectOfType<DeviceController>();
 
         SetPlayerHealth();
 
@@ -93,14 +98,6 @@ public class GameController : MonoBehaviour
     {
         isGamePaused = !isGamePaused;
 
-        // we have to enable/disable the player input because when the game it's paused player's action can still be triggered
-
-        // and we can see how the player's sprite changes!
-
-        PlayerInput playerInput = playerController.GetPlayerInput();
-
-        playerInput.enabled = !isGamePaused;
-
         if(isGamePaused)
         {
             pauseScreen.SetActive(true);
@@ -108,12 +105,16 @@ public class GameController : MonoBehaviour
             pausedSelectedButton.Select(); // every time we pause the game put this button as first button selected!
 
             Time.timeScale = 0f;
+
+            deviceController.UpdateGameActions("Menu");
         }
         else 
         {
             pauseScreen.SetActive(false);
 
             Time.timeScale = 1f;
+
+            deviceController.UpdateGameActions("Player");
         }
     }
 

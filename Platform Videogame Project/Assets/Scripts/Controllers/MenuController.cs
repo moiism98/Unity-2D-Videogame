@@ -18,7 +18,8 @@ public class MenuController : MonoBehaviour
 
     private void Update()
     {
-        deviceController.ShowDeviceUI(animator, animatorControllers);
+        if(animator != null)
+            deviceController.ShowDeviceUI(animator, animatorControllers);
     }
 
     public void PressToStartGame(InputAction.CallbackContext press)
@@ -33,11 +34,10 @@ public class MenuController : MonoBehaviour
 
         GameController.isGamePaused = !GameController.isGamePaused;
 
-        // enable again the player input if not the player can not execute his actions.
-
-        PlayerInput playerInput = playerController.GetPlayerInput();
-
-        playerInput.enabled = !GameController.isGamePaused;
+        if(!GameController.isGamePaused)
+            deviceController.UpdateGameActions("Player");
+        else
+            deviceController.UpdateGameActions("Menu");
     }
     public void RetryGame()
     {

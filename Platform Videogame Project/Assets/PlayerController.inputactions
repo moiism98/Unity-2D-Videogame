@@ -76,6 +76,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "PlayerPause",
+                    "type": "Button",
+                    "id": "d9eb4a3a-8232-4280-acb8-fff810ba9dab",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -342,6 +351,28 @@
                     "action": "Shoot",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "98ffc9ae-6279-4c12-b06f-503dd10ba543",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard Scheme",
+                    "action": "PlayerPause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2465cb03-4533-495e-ac0a-66615d6648f3",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad Scheme",
+                    "action": "PlayerPause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -368,9 +399,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Open/Close",
+                    "name": "MenuPause",
                     "type": "Button",
-                    "id": "cdc7457f-fe41-422e-98e2-af9d5bd01594",
+                    "id": "cdadafc8-ebf5-41bf-afe2-0bb1849c1954",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -512,27 +543,33 @@
                 },
                 {
                     "name": "",
-                    "id": "a9616c29-f24c-46dd-9ef4-492105c9fd36",
+                    "id": "34c976a0-dfa1-46ff-832f-52215bea0d9f",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard Scheme",
-                    "action": "Open/Close",
+                    "action": "MenuPause",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "e111717f-a78b-46ed-a942-ff63b2a8eb7e",
+                    "id": "3815c816-d25c-4efa-b35b-58f4b5001794",
                     "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad Scheme",
-                    "action": "Open/Close",
+                    "action": "MenuPause",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Game",
+            "id": "be96a81e-f345-4953-b0fd-16b8517edf0f",
+            "actions": [],
+            "bindings": []
         }
     ],
     "controlSchemes": [
