@@ -384,7 +384,7 @@
                     "name": "Move",
                     "type": "Value",
                     "id": "5b7fe169-ba9b-4b6b-8a4a-ffa75019c055",
-                    "expectedControlType": "",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true

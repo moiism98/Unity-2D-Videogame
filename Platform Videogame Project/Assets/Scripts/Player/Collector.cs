@@ -21,5 +21,9 @@ public class Collector : MonoBehaviour
         Fruit fruit = collision.GetComponent<Fruit>();
 
         fruit?.Collect();
+
+        Key key = collision.GetComponent<Key>();
+
+        key?.Collect();
     }
 }

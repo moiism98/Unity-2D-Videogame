@@ -10,6 +10,7 @@ public class Ladder : MonoBehaviour
     [SerializeField] private RuntimeAnimatorController[] animatorControllers;
     private GameController gameController;
     private PlayerController playerController;
+    private DeviceController deviceController;
     private Collider2D climbPointCollider;
 
     private void Start()
@@ -19,6 +20,8 @@ public class Ladder : MonoBehaviour
         gameController = FindObjectOfType<GameController>();
 
         playerController = FindObjectOfType<PlayerController>();
+
+        deviceController = FindObjectOfType<DeviceController>();
 
         climbPointCollider = GetComponent<Collider2D>();
     }
@@ -84,22 +87,9 @@ public class Ladder : MonoBehaviour
         gameController.SetLadder(null);
     }
 
-    public void ShowControllerButton(string controllerInUse)
+    public void ShowControllerButton()
     {
-        //RuntimeAnimatorController animatorController;
-
-        // this method it's going to determinate which controller are we using, it helps GameController to show the corresponding UI button.
-
-        // every frame the GameController knows what controller are we using and this method display the correct animation!
-
-        switch(controllerInUse)
-        {
-            case "Keyboard": GetAnimatorController("keyboard"); break;
-
-            case "Xbox Controller": GetAnimatorController("xbox"); break;
-
-            default: GetAnimatorController("ps"); break;
-        }
+        deviceController.ShowDeviceUI(animator, animatorControllers);
 
         buttonBubble.SetActive(true);
     }
@@ -109,13 +99,6 @@ public class Ladder : MonoBehaviour
         buttonBubble.SetActive(false);
         
         animator.Rebind();
-    }
-
-    private void GetAnimatorController(string controllerName)
-    {
-        RuntimeAnimatorController animatorController = Array.Find(animatorControllers, controller => controller.name.Contains(controllerName));
-
-        animator.runtimeAnimatorController = animatorController;
     }
 
     public bool GetIsClimbable()

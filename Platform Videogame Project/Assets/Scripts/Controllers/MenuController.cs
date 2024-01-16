@@ -4,8 +4,10 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
-    [SerializeField] private RuntimeAnimatorController[] animatorControllers;
-    [SerializeField] private Animator animator; // action animator which shows what UI should show to the player (keyboard, xbox or ps UI)
+    // this properties are publics and hidden on inspector because we are using a custom editor for this class.
+    [HideInInspector] public Scene scene = Scene.main;
+    [HideInInspector] public RuntimeAnimatorController[] animatorControllers;
+    [HideInInspector] public Animator animator; // action animator which shows what UI should show to the player (keyboard, xbox or ps UI)
     private DeviceController deviceController;
     private PlayerController playerController;
     
@@ -25,7 +27,11 @@ public class MenuController : MonoBehaviour
     public void PressToStartGame(InputAction.CallbackContext press)
     {
         if(press.performed)
+        {
             SceneManager.LoadScene("GameScene");
+
+            Time.timeScale = 1;
+        }
     }
 
     public void ResumeGame()

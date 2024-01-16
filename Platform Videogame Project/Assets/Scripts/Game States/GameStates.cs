@@ -24,3 +24,15 @@ public enum HeartType
     heart, 
     emptyHeart
 }
+
+public enum Scene
+{
+    main,
+    game
+}
+
+public enum GameMode
+{
+    regular,
+    bonus
+}

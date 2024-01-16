@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -5,11 +6,29 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
+    [Header("Level")]
+    private int keysCollected = 0;
+    private int keysToCollect = 5;
+    [SerializeField] private Level[] levels;
+    private string levelName = "Beach Forest"; // this is NOT going to be static, but for now we only have 1 level.
+    private Level selectedLevel;
+    private Stage currentStage;
+    [SerializeField] private GameMode gameMode = GameMode.regular;
+
     [Header("Game UI")]
+    [SerializeField] private GameObject gameUIPanel;
     [SerializeField] private GameObject earnedScore;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private int scoreTextMaxLength = 17;
     [SerializeField] GameObject arrow;
+
+        [Header("Transition")]
+        [SerializeField] private GameObject transitionScreen;
+        [SerializeField] private float transitionTime = 5f;
+        [SerializeField] private TextMeshProUGUI transitionScore;
+        [SerializeField] private TextMeshProUGUI transitionLifes;
+        [SerializeField] private TextMeshProUGUI currentStageText;
+        [SerializeField] private TextMeshProUGUI lastStageText;
 
         [Header("Pause UI")]
         [SerializeField] GameObject pauseScreen;
@@ -43,6 +62,14 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        LoadInitialLevel();
+
+        Invoke("StopTransition", transitionTime);
+
+        gameUIPanel.SetActive(false);
+
+        transitionScreen.SetActive(true);
+
         gameOverScreen.SetActive(false);
 
         pauseScreen.SetActive(isGamePaused);
@@ -54,6 +81,8 @@ public class GameController : MonoBehaviour
         SetPlayerHealth();
 
         // we suscribe the method to the game events
+
+        Key.OnKeyCollect += AddKey;
 
         Gem.OnGemCollect += IncreseScore;
 
@@ -74,13 +103,40 @@ public class GameController : MonoBehaviour
     {
         // if we are close to a ladder in the level, we can show the corresponding controller button (based in which controller are we using right now)
 
-        ladder?.ShowControllerButton(controllerInUse);
+        ladder?.ShowControllerButton();
 
         arrow.SetActive(isArrowReady);
 
         FruitsForLifes();
 
         lifesText.text = playerLifes.ToString();
+
+        transitionScore.text = scoreText.text;
+
+        transitionLifes.text = playerLifes.ToString();
+    }
+
+    private void LoadInitialLevel()
+    {
+        selectedLevel = Array.Find(levels, level => level.GetName().Equals(levelName));
+
+        if(selectedLevel != null)
+        {
+            lastStageText.text = selectedLevel.GetStages().Count.ToString();
+
+            currentStage = selectedLevel.GetStages()[0];
+
+            currentStageText.text = currentStage.GetIndex().ToString();
+        }
+    }
+
+    private void StopTransition()
+    {
+        Time.timeScale = 1;
+
+        transitionScreen.SetActive(false);
+
+        gameUIPanel.SetActive(true);
     }
 
     public void Pause(InputAction.CallbackContext pause)
@@ -274,6 +330,11 @@ public class GameController : MonoBehaviour
 
             SetPlayerLifes(currentLifes);
         }
+    }
+
+    private void AddKey(int key)
+    {
+        keysCollected += key;
     }
 
     public void ShowGameOverMenu()
