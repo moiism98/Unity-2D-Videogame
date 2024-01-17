@@ -132,7 +132,11 @@ public class EnemyController : MonoBehaviour
         int randomProbability = UnityEngine.Random.Range(0, 101);
 
         if(randomProbability <= dropProbability)
-            Instantiate(heartPrefab, transform.position, Quaternion.identity);
+        {
+            Vector2 dropSpawnPoint = new Vector2(transform.position.x, transform.position.y - .3f);
+        
+            Instantiate(heartPrefab, dropSpawnPoint, Quaternion.identity);
+        }
     }
 
     private void HitPlayer()

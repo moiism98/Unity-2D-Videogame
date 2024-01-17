@@ -36,3 +36,11 @@ public enum GameMode
     regular,
     bonus
 }
+
+public enum GameAction
+{
+    none,
+    exit,
+    climb,
+    lever
+}

@@ -14,7 +14,7 @@ GameObject:
   m_Layer: 0
   m_Name: Climb point (Top)
   m_TagString: Untagged
-  m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -161,7 +161,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -882988575
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: -1575252331, guid: f51e8d0e0e0543f428aaf2249a92aaeb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

@@ -70,6 +70,13 @@ public class PlayerController : MonoBehaviour
         gameController = FindObjectOfType<GameController>();
 
         health = maxHealth;
+
+        Transform spawPoint = GameObject.FindGameObjectWithTag("Spawn Point").transform;
+
+        if(spawPoint != null)
+        {
+            gameObject.transform.position = spawPoint.position;
+        }
     }
 
     private void Update()
@@ -216,43 +223,6 @@ public class PlayerController : MonoBehaviour
         gameController.SetControllerInUse(passThroughPlatform.control.device.displayName);
     }
 
-    public void ClimbAction(InputAction.CallbackContext climb)
-    { 
-        
-        if(climb.performed)
-        {   
-            // if we pressed the climb action button while climbing will stop the climb action again!
-
-            if(isClimbing)
-                isClimbing = !isClimbing;
-
-            if(ladder != null && ladder.GetIsClimbable())
-            {
-                // the player starts climbing with no moving
-
-                rb.velocity = Vector2.zero;
-
-                SetMovement(0f);
-
-                // player starts climbing at the climb point
-
-                transform.position = new Vector2(ladder.transform.position.x, ladder.transform.position.y);
-
-                SetIsClimbing(!isClimbing);
-
-                rb.gravityScale = 0; // we cancel the gravity on climb so we can not slide over the ladder
-
-                ladder.HideControllerButton(); // and hide the button bubble
-
-                // the players body colliders are disable while it's climbing
-
-                DisablePlayerCols();
-            }
-        }
-
-        gameController.SetControllerInUse(climb.control.device.displayName);
-    }
-
     public void Climb(InputAction.CallbackContext climb)
     {
         
@@ -272,7 +242,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void DisablePlayerCols()
+    public void DisablePlayerCols()
     {
         CapsuleCollider2D[] playerColliders = gameObject.GetComponents<CapsuleCollider2D>();
 
@@ -433,8 +403,10 @@ public class PlayerController : MonoBehaviour
     private void ShootArrow()
     {
         GameController.isArrowReady = false;
+
+        Vector2 shootPoint = new Vector2(transform.position.x, transform.position.y - .5f);
         
-        Instantiate(arrowPrefab, transform.position, arrowPrefab.transform.rotation);
+        Instantiate(arrowPrefab, shootPoint, arrowPrefab.transform.rotation);
 
     }
 

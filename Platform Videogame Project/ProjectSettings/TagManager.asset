@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Arrow
   - HitPoint
+  - Spawn Point
   layers:
   - Default
   - TransparentFX
@@ -57,18 +58,24 @@ TagManager:
   - name: Ladder
     uniqueID: 3411978721
     locked: 0
+  - name: Decoration
+    uniqueID: 939553307
+    locked: 0
   - name: Item
     uniqueID: 1548491317
     locked: 0
   - name: Enemy
     uniqueID: 2606700775
     locked: 0
+  - name: Action
+    uniqueID: 4013726885
+    locked: 0
   - name: Arrow
     uniqueID: 743578315
     locked: 0
-  - name: Decoration
-    uniqueID: 939553307
-    locked: 0
   - name: Player
     uniqueID: 4257236407
+    locked: 0
+  - name: SpecialBush
+    uniqueID: 781984211
     locked: 0

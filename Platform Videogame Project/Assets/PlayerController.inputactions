@@ -6,6 +6,15 @@
             "id": "ff5d6998-356b-4842-b954-1fee119c975e",
             "actions": [
                 {
+                    "name": "Action",
+                    "type": "Button",
+                    "id": "24a6dfd6-4b93-4f59-9c73-92e7df1fc02a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Walk",
                     "type": "Value",
                     "id": "69f38fb2-be40-4445-a254-3cd378c556b4",
@@ -373,6 +382,28 @@
                     "action": "PlayerPause",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ccfdc9fd-5a71-4d64-bb14-be4577261935",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fb66df5a-4a00-4814-9743-0dfc37c352bd",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -564,12 +595,6 @@
                     "isPartOfComposite": false
                 }
             ]
-        },
-        {
-            "name": "Game",
-            "id": "be96a81e-f345-4953-b0fd-16b8517edf0f",
-            "actions": [],
-            "bindings": []
         }
     ],
     "controlSchemes": [

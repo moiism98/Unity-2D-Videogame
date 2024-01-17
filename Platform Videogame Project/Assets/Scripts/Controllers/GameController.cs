@@ -7,13 +7,17 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     [Header("Level")]
-    private int keysCollected = 0;
-    private int keysToCollect = 5;
+    public static bool levelComplete = false;
     [SerializeField] private Level[] levels;
     private string levelName = "Beach Forest"; // this is NOT going to be static, but for now we only have 1 level.
     private Level selectedLevel;
     private Stage currentStage;
-    [SerializeField] private GameMode gameMode = GameMode.regular;
+    public static GameMode gameMode = GameMode.regular;
+    [SerializeField] private GameAction action = GameAction.none;
+
+    [Header("Coroutine states")]
+    private bool isHealing = false;
+    private bool collectingKey = false;
 
     [Header("Game UI")]
     [SerializeField] private GameObject gameUIPanel;
@@ -49,8 +53,12 @@ public class GameController : MonoBehaviour
         [SerializeField] private int playerLifes = 0;
         [SerializeField] private int fruits4lifes = 3;
         [SerializeField] private int fruits = 0;
+
+        [Header("Keys")]
+        [SerializeField] private TextMeshProUGUI keysText;
+        public static int keysCollected = 0;
+        public static int keysToCollect = 5; // 5 keys
     public static bool isArrowReady = false;
-    private bool isHealing = false;
 
     [Header("Controllers")]
     private PlayerController playerController;
@@ -82,7 +90,7 @@ public class GameController : MonoBehaviour
 
         // we suscribe the method to the game events
 
-        Key.OnKeyCollect += AddKey;
+        Key.OnKeyCollect += CollectKey;
 
         Gem.OnGemCollect += IncreseScore;
 
@@ -110,6 +118,8 @@ public class GameController : MonoBehaviour
         FruitsForLifes();
 
         lifesText.text = playerLifes.ToString();
+
+        keysText.text = keysCollected.ToString();
 
         transitionScore.text = scoreText.text;
 
@@ -332,9 +342,26 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void AddKey(int key)
+    private void CollectKey(int key)
     {
-        keysCollected += key;
+        StartCoroutine(AddKey(key));
+    }
+
+    private IEnumerator AddKey(int key)
+    {
+        if(!collectingKey)
+        {
+            collectingKey = true;
+
+            keysCollected += key;
+
+            if(keysCollected.Equals(keysToCollect))
+                levelComplete = true;
+            
+            yield return new WaitForSeconds(.15f);
+
+            collectingKey = false;
+        }
     }
 
     public void ShowGameOverMenu()
@@ -344,6 +371,21 @@ public class GameController : MonoBehaviour
         gameOverScreen.SetActive(true);
 
         isGameOver = true;
+    }
+
+    public GameAction GetGameAction()
+    {
+        return this.action;
+    }
+
+    public Ladder GetLadder()
+    {
+        return this.ladder;
+    }
+
+    public void SetGameAction(GameAction action)
+    {
+        this.action = action;
     }
     public void SetControllerInUse(string controllerInUse)
     {

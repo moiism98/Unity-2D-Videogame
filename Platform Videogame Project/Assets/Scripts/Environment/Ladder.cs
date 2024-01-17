@@ -4,7 +4,7 @@ using UnityEngine;
 public class Ladder : MonoBehaviour
 {
     [SerializeField] private ClimbPoint climbPoint = ClimbPoint.bottom;
-    [SerializeField] private bool isClimbable = false;
+    [SerializeField] public static bool isClimbable = false;
     [SerializeField] private GameObject buttonBubble;
     [SerializeField] private Animator animator;
     [SerializeField] private RuntimeAnimatorController[] animatorControllers;
@@ -25,9 +25,9 @@ public class Ladder : MonoBehaviour
 
         climbPointCollider = GetComponent<Collider2D>();
     }
-    private void OnTriggerEnter2D()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(playerController != null)
+        if(collision.CompareTag("Player"))
         {
             if(playerController.GetIsClimbing()) // if we touch the climb point when we are climbing
             {
@@ -40,11 +40,11 @@ public class Ladder : MonoBehaviour
                     
                 // also the player stops climbing
 
-                playerController.SetIsClimbing(!playerController.GetIsClimbing());
+                playerController.SetIsClimbing(false);
 
-                playerController.GetComponent<Animator>().SetBool("Climbing", playerController.GetIsClimbing());
+                playerController.GetComponent<Animator>().SetBool("Climbing", false);
 
-                // and the set the movement to zero avoiding the player keep moving with the climb movement velocity
+                // and set the movement to zero avoiding the player keep moving with the climb movement velocity
 
                 playerController.SetMovement(0f);
             }
@@ -53,9 +53,9 @@ public class Ladder : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit2D()
-    {
-        if(playerController != null)
+    private void OnTriggerExit2D(Collider2D collision)
+    {       
+        if(collision.CompareTag("Player"))
             HideClimbUI();
     }
 
@@ -70,6 +70,8 @@ public class Ladder : MonoBehaviour
         gameController.SetLadder(this);
 
         playerController.SetLadder(this);
+
+        gameController.SetGameAction(GameAction.climb);
     }
 
     private void HideClimbUI()
@@ -85,6 +87,8 @@ public class Ladder : MonoBehaviour
         // set GameControllers ladder to null, to reset the action
 
         gameController.SetLadder(null);
+
+        gameController.SetGameAction(GameAction.none);
     }
 
     public void ShowControllerButton()
