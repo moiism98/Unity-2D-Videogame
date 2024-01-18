@@ -110,7 +110,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1688266521
-  m_SortingLayer: 5
+  m_SortingLayer: 9
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 86ca59b9bca0e409b9ba2784fbe69f01, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -237,7 +237,7 @@ MonoBehaviour:
   dieAnimation: {fileID: 7970727313707624234, guid: 2f0f7f4adb2ce79499e3d6f47fae2829, type: 3}
   hitPoint: {fileID: 4281730928291254345}
   heartPrefab: {fileID: 5401333328378446738, guid: 10f9a8b2ab57629438ca7303e2da96a0, type: 3}
-  dropProbability: 25
+  dropProbability: 50
   damagePoint: {fileID: 5752747133291522246}
   damageCollider: 0
   damagePointRadius: 0.45

@@ -17,10 +17,10 @@ public class Fruit : MonoBehaviour, ItemInterface
     {
         OnFruitCollect.Invoke(fruitScore);
 
-        Destroy(gameObject);
-
         Instantiate(collectAnimation, transform.position, Quaternion.identity);
 
         gameController.ShowEarnedScore(fruitScore, transform);
+
+        Destroy(gameObject);
     }
 }

@@ -20,7 +20,7 @@ TagManager:
   - Platform
   - Ladder
   - Enemy
-  - 
+  - Crate
   - 
   - 
   - 
@@ -55,23 +55,23 @@ TagManager:
   - name: Ground
     uniqueID: 840625269
     locked: 0
-  - name: Ladder
-    uniqueID: 3411978721
-    locked: 0
   - name: Decoration
     uniqueID: 939553307
     locked: 0
-  - name: Item
-    uniqueID: 1548491317
-    locked: 0
-  - name: Enemy
-    uniqueID: 2606700775
+  - name: Ladder
+    uniqueID: 3411978721
     locked: 0
   - name: Action
     uniqueID: 4013726885
     locked: 0
   - name: Arrow
     uniqueID: 743578315
+    locked: 0
+  - name: Item
+    uniqueID: 1548491317
+    locked: 0
+  - name: Enemy
+    uniqueID: 2606700775
     locked: 0
   - name: Player
     uniqueID: 4257236407

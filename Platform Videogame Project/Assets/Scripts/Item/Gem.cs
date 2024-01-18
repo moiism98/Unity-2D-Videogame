@@ -18,8 +18,8 @@ public class Gem : MonoBehaviour, ItemInterface
 
         Instantiate(collectAnimation, transform.position, Quaternion.identity);
 
-        Destroy(gameObject);
-
         gameController.ShowEarnedScore(gemValue, transform);
+
+        Destroy(gameObject);
     }
 }

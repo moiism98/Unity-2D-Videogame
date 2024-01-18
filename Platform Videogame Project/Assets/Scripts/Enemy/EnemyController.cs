@@ -70,9 +70,12 @@ public class EnemyController : MonoBehaviour
 
         animator.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
 
-        if(player.transform.position.y > hitPoint.transform.position.y)
-            hitPoint.SetActive(true);
-        else hitPoint.SetActive(false);
+        if(gameController.GetGameMode().Equals(GameMode.bonus))
+        {
+            if(player.transform.position.y > hitPoint.transform.position.y)
+                hitPoint.SetActive(true);
+            else hitPoint.SetActive(false);
+        }
 
         HitPlayer();   
     }
@@ -206,8 +209,6 @@ public class EnemyController : MonoBehaviour
         Transform checker;
 
         checker = Array.Find(checkers, chk => MathF.Truncate(transform.position.x - chk.transform.position.x).Equals(this.GetDirection() * -1));
-
-        // checker = Array.Find(checkers, chk => Mathf.Round(transform.position.x - chk.transform.position.x).Equals(this.GetDirection() * -1));
         
         return checker;
     }

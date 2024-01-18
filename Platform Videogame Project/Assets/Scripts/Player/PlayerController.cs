@@ -10,8 +10,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private AnimationCurve gravityCurve;
     private float maxFallSpeed = 20;
-    [Header("Player Inputs")]
-    private PlayerInput playerInput;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 3f;
@@ -47,7 +45,6 @@ public class PlayerController : MonoBehaviour
 
     [Header("Climb")]
     private bool isClimbing = false;
-    private Ladder ladder;
     [SerializeField] [Range(0f, 1f)] private float climbWallCheckRadius;
 
     [Header("Shoot")]
@@ -62,20 +59,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private ParticleSystem jumpParticles;
     private bool activateLandingParticles = false;
     private GameController gameController;
+    private Transform spawnPoint;
 
     private void Start()
     {
-        playerInput = GetComponent<PlayerInput>();
-
         gameController = FindObjectOfType<GameController>();
 
         health = maxHealth;
 
-        Transform spawPoint = GameObject.FindGameObjectWithTag("Spawn Point").transform;
+        spawnPoint = GameObject.FindGameObjectWithTag("Spawn Point").transform;
 
-        if(spawPoint != null)
+        if(spawnPoint != null)
         {
-            gameObject.transform.position = spawPoint.position;
+            gameObject.transform.position = spawnPoint.position;
         }
     }
 
@@ -443,11 +439,6 @@ public class PlayerController : MonoBehaviour
         this.isClimbing = isClimbing;
     }
 
-    public void SetLadder(Ladder ladder)
-    {
-        this.ladder = ladder;
-    }
-
     public void SetMovement(float movement)
     {
         this.movement = movement;
@@ -456,11 +447,6 @@ public class PlayerController : MonoBehaviour
     public void SetHealth(int health)
     {
         this.health = health;
-    }
-
-    public PlayerInput GetPlayerInput()
-    {
-        return this.playerInput;
     }
 
     public bool GetIsClimbing()

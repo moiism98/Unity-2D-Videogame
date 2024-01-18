@@ -69,8 +69,6 @@ public class Ladder : MonoBehaviour
 
         gameController.SetLadder(this);
 
-        playerController.SetLadder(this);
-
         gameController.SetGameAction(GameAction.climb);
     }
 

@@ -12,12 +12,12 @@ public class GameController : MonoBehaviour
     private string levelName = "Beach Forest"; // this is NOT going to be static, but for now we only have 1 level.
     private Level selectedLevel;
     private Stage currentStage;
-    public static GameMode gameMode = GameMode.regular;
+    [SerializeField] private GameMode gameMode = GameMode.regular;
     [SerializeField] private GameAction action = GameAction.none;
 
     [Header("Coroutine states")]
     private bool isHealing = false;
-    private bool collectingKey = false;
+    private bool isCollectingItem = false;
 
     [Header("Game UI")]
     [SerializeField] private GameObject gameUIPanel;
@@ -96,7 +96,7 @@ public class GameController : MonoBehaviour
 
         Heart.OnHeartCollect += HealPlayer;
 
-        Fruit.OnFruitCollect += AddFruit;
+        Fruit.OnFruitCollect += CollectFruit;
 
         EnemyController.OnEnemyDie += IncreseScore;
 
@@ -105,6 +105,8 @@ public class GameController : MonoBehaviour
         scoreText.text = SetMaxScoreLength(scoreTextMaxLength);
 
         lifesText.text = playerLifes.ToString();
+
+        DisableEnemyHitPoint();
     }
     
     private void Update()
@@ -242,6 +244,7 @@ public class GameController : MonoBehaviour
         earnedScore.GetComponent<TextMeshPro>().text = "+ " + score.ToString();
 
         Instantiate(earnedScore, scorePosition.position, Quaternion.identity);
+        
     }
 
     /// <summary>
@@ -316,11 +319,26 @@ public class GameController : MonoBehaviour
     /// 
     /// </summary>
     /// <param name="fruitScore"></param>
-    private void AddFruit(int fruitScore)
+    private void CollectFruit(int fruitScore)
     {
-        fruits++;
+        StartCoroutine(AddFruit(fruitScore));
+    }
 
-        IncreseScore(fruitScore);
+    private IEnumerator AddFruit(int fruitScore)
+    {
+        if(!isCollectingItem)
+        {
+            isCollectingItem = true;
+
+            fruits++;
+
+            IncreseScore(fruitScore);
+
+            yield return new WaitForSeconds(.15f);
+
+            isCollectingItem = false;
+
+        }
     }
 
     /// <summary>
@@ -342,25 +360,27 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void CollectKey(int key)
+    private void CollectKey(int key, int keyScore)
     {
-        StartCoroutine(AddKey(key));
+        StartCoroutine(AddKey(key, keyScore));
     }
 
-    private IEnumerator AddKey(int key)
+    private IEnumerator AddKey(int key, int keyScore)
     {
-        if(!collectingKey)
+        if(!isCollectingItem)
         {
-            collectingKey = true;
+            isCollectingItem = true;
 
             keysCollected += key;
+
+            IncreseScore(keyScore);
 
             if(keysCollected.Equals(keysToCollect))
                 levelComplete = true;
             
             yield return new WaitForSeconds(.15f);
 
-            collectingKey = false;
+            isCollectingItem = false;
         }
     }
 
@@ -373,6 +393,21 @@ public class GameController : MonoBehaviour
         isGameOver = true;
     }
 
+    private void DisableEnemyHitPoint()
+    {
+        if(gameMode.Equals(GameMode.regular))
+        {
+            GameObject[] hitPoints = GameObject.FindGameObjectsWithTag("HitPoint");
+
+            foreach(GameObject hitPoint in hitPoints)
+                hitPoint.SetActive(false);
+        }
+    }
+
+    public GameMode GetGameMode()
+    {
+        return this.gameMode;
+    }
     public GameAction GetGameAction()
     {
         return this.action;
@@ -381,6 +416,11 @@ public class GameController : MonoBehaviour
     public Ladder GetLadder()
     {
         return this.ladder;
+    }
+
+    public void SetGameMode(GameMode gameMode)
+    {
+        this.gameMode = gameMode;
     }
 
     public void SetGameAction(GameAction action)
