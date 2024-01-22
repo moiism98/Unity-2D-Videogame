@@ -9,6 +9,7 @@ TagManager:
   - Arrow
   - HitPoint
   - Spawn Point
+  - Level
   layers:
   - Default
   - TransparentFX

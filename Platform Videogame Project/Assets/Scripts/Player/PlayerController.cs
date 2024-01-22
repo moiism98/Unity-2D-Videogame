@@ -126,8 +126,6 @@ public class PlayerController : MonoBehaviour
             if(walk.performed)
                 direction = walk.ReadValue<Vector2>().x;
         }
-
-        gameController.SetControllerInUse(walk.control.device.displayName);
     }
 
     public void Run(InputAction.CallbackContext run)
@@ -145,8 +143,6 @@ public class PlayerController : MonoBehaviour
         
             StopRunParticles();
         }
-
-        gameController.SetControllerInUse(run.control.device.displayName);
     }
 
     public void Jump(InputAction.CallbackContext jump)
@@ -162,8 +158,6 @@ public class PlayerController : MonoBehaviour
 
             activateLandingParticles = !activateLandingParticles;     
         }
-
-        gameController.SetControllerInUse(jump.control.device.displayName);
     }
 
     public void Crouch(InputAction.CallbackContext crouch)
@@ -196,8 +190,6 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-
-        gameController.SetControllerInUse(crouch.control.device.displayName);
     }
 
     public void PassThroughPlatform(InputAction.CallbackContext passThroughPlatform)
@@ -214,9 +206,6 @@ public class PlayerController : MonoBehaviour
             if(AbovePlatform()) // we check if we are above a platform so we can pass through it.
                 StartCoroutine(JumpUnderPlatform());
         }
-        
-
-        gameController.SetControllerInUse(passThroughPlatform.control.device.displayName);
     }
 
     public void Climb(InputAction.CallbackContext climb)
@@ -224,8 +213,6 @@ public class PlayerController : MonoBehaviour
         
         if(isClimbing)
             SetMovement(climb.ReadValue<Vector2>().y);
-
-        gameController.SetControllerInUse(climb.control.device.displayName);
     }
     private void EnablePlayerCols()
     {

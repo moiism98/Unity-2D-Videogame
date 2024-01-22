@@ -13,7 +13,7 @@ public class Key : MonoBehaviour, ItemInterface
     }
     public void Collect()
     {
-        OnKeyCollect.Invoke(keyValue, keyValue);
+        OnKeyCollect.Invoke(keyValue, keyScore);
 
         gameController.ShowEarnedScore(keyScore, transform);
 

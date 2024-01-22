@@ -5,7 +5,6 @@ public class Exit : MonoBehaviour
     public static bool nearExit = false;
     private DeviceController deviceController;
     private GameController gameController;
-    private Collider2D exitCollider;
     [SerializeField] private GameObject action;
     [SerializeField] private RuntimeAnimatorController[] animatorControllers;
     [SerializeField] private Animator animator;
@@ -15,8 +14,6 @@ public class Exit : MonoBehaviour
         deviceController = FindObjectOfType<DeviceController>();
 
         gameController = FindObjectOfType<GameController>();
-
-        exitCollider = GetComponent<Collider2D>(); 
 
         action.SetActive(false);
     }

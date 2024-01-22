@@ -62,14 +62,7 @@ public class DeviceController : MonoBehaviour
             {
                 switch(gameController.GetGameAction())
                 {
-                    case GameAction.exit: 
-
-                        if(GameController.levelComplete && Exit.nearExit)
-                        {
-                            Debug.Log("Level complete, load next level!");
-                        }
-
-                    break;
+                    case GameAction.exit: gameController.LoadNextLevel(); break;
 
                     case GameAction.lever: lever.Activate(); break;
 

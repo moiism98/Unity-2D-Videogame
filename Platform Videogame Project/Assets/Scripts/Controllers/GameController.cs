@@ -3,17 +3,19 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
+
     [Header("Level")]
+    [SerializeField] private GameAction action = GameAction.none;
+    [HideInInspector] public GameMode gameMode = GameMode.regular;
     public static bool levelComplete = false;
     [SerializeField] private Level[] levels;
     private string levelName = "Beach Forest"; // this is NOT going to be static, but for now we only have 1 level.
     private Level selectedLevel;
     private Stage currentStage;
-    [SerializeField] private GameMode gameMode = GameMode.regular;
-    [SerializeField] private GameAction action = GameAction.none;
 
     [Header("Coroutine states")]
     private bool isHealing = false;
@@ -23,16 +25,17 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject gameUIPanel;
     [SerializeField] private GameObject earnedScore;
     [SerializeField] private TextMeshProUGUI scoreText;
-    [SerializeField] private int scoreTextMaxLength = 17;
     [SerializeField] GameObject arrow;
 
         [Header("Transition")]
         [SerializeField] private GameObject transitionScreen;
+        [SerializeField] private GameObject bonusTransitionScreen;
         [SerializeField] private float transitionTime = 5f;
         [SerializeField] private TextMeshProUGUI transitionScore;
         [SerializeField] private TextMeshProUGUI transitionLifes;
-        [SerializeField] private TextMeshProUGUI currentStageText;
-        [SerializeField] private TextMeshProUGUI lastStageText;
+        [HideInInspector] public TextMeshProUGUI currentStageText;
+        [HideInInspector] public TextMeshProUGUI lastStageText;
+        private bool transitionLoaded = false;
 
         [Header("Pause UI")]
         [SerializeField] GameObject pauseScreen;
@@ -55,7 +58,7 @@ public class GameController : MonoBehaviour
         [SerializeField] private int fruits = 0;
 
         [Header("Keys")]
-        [SerializeField] private TextMeshProUGUI keysText;
+        [HideInInspector] public TextMeshProUGUI keysText;
         public static int keysCollected = 0;
         public static int keysToCollect = 5; // 5 keys
     public static bool isArrowReady = false;
@@ -63,10 +66,22 @@ public class GameController : MonoBehaviour
     [Header("Controllers")]
     private PlayerController playerController;
     private DeviceController deviceController;
-    private string controllerInUse;
 
     [Header("Climb variables")]
     private Ladder ladder;
+    private static GameController instance;
+
+    private void Awake()
+    {
+        if(instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+
+        DontDestroyOnLoad(gameObject);
+
+        DontDestroyOnLoad(gameUIPanel);
+    }
 
     private void Start()
     {
@@ -77,6 +92,8 @@ public class GameController : MonoBehaviour
         gameUIPanel.SetActive(false);
 
         transitionScreen.SetActive(true);
+
+        bonusTransitionScreen.SetActive(false);
 
         gameOverScreen.SetActive(false);
 
@@ -102,7 +119,7 @@ public class GameController : MonoBehaviour
 
         // this is when the game starts for the first time and not when there is a saved values! 
 
-        scoreText.text = SetMaxScoreLength(scoreTextMaxLength);
+        scoreText.text = "0";
 
         lifesText.text = playerLifes.ToString();
 
@@ -126,6 +143,15 @@ public class GameController : MonoBehaviour
         transitionScore.text = scoreText.text;
 
         transitionLifes.text = playerLifes.ToString();
+
+        if(gameMode.Equals(GameMode.bonus) && !transitionLoaded)
+        {
+            transitionLoaded = true;
+
+            bonusTransitionScreen.SetActive(true);
+
+            Invoke("StopTransition", transitionTime);
+        }
     }
 
     private void LoadInitialLevel()
@@ -142,11 +168,42 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public void LoadNextLevel()
+    {
+        switch(gameMode)
+        {
+            case GameMode.regular:
+
+                if(levelComplete && Exit.nearExit)
+                {
+                    gameMode = GameMode.bonus;
+
+                    SceneManager.LoadScene("BonusScene");
+
+                    Time.timeScale = 0f;
+                }
+
+            break;
+        }
+        
+    }
+
     private void StopTransition()
     {
-        Time.timeScale = 1;
+        Time.timeScale = 1;            
+        
+        switch(gameMode)
+        {
+            case GameMode.regular: transitionScreen.SetActive(false); break;
 
-        transitionScreen.SetActive(false);
+            case GameMode.bonus: 
+
+                transitionLoaded = true;
+            
+                bonusTransitionScreen.SetActive(false); 
+            
+            break;
+        }
 
         gameUIPanel.SetActive(true);
     }
@@ -158,8 +215,6 @@ public class GameController : MonoBehaviour
             if(pause.performed)
                 ShowPauseMenu();
         }
-
-        SetControllerInUse(pause.control.device.displayName);
     }
 
     private void ShowPauseMenu()
@@ -187,25 +242,6 @@ public class GameController : MonoBehaviour
     }
 
     /// <summary>
-    /// Set the score max digits to the game UI.
-    /// </summary>
-    /// <param name="maxLength"></param>
-    /// <returns></returns> <summary>
-    /// 
-    /// </summary>
-    /// <param name="maxLength"></param>
-    /// <returns></returns>
-    private string SetMaxScoreLength(int maxLength)
-    {
-        string score = "";
-
-        for(int zeros = 0; zeros < maxLength; zeros++)
-            score += "0";
-
-        return score;
-    }
-
-    /// <summary>
     /// Triggers the coroutine that increase or set the game score.
     /// </summary>
     /// <param name="gemValue"></param>
@@ -222,12 +258,10 @@ public class GameController : MonoBehaviour
     private IEnumerator SetNewScore(int score)
     {
         int newScore = int.Parse(scoreText.text) + score;
-            
-        string newScoreText = SetMaxScoreLength(scoreTextMaxLength - score.ToString().Length) + newScore.ToString();
 
         yield return new WaitForSeconds(.1f);
 
-        scoreText.text = newScoreText;
+        scoreText.text = newScore.ToString();
     }
     
     /// <summary>
@@ -418,18 +452,9 @@ public class GameController : MonoBehaviour
         return this.ladder;
     }
 
-    public void SetGameMode(GameMode gameMode)
-    {
-        this.gameMode = gameMode;
-    }
-
     public void SetGameAction(GameAction action)
     {
         this.action = action;
-    }
-    public void SetControllerInUse(string controllerInUse)
-    {
-        this.controllerInUse = controllerInUse;
     }
 
     public void SetLadder(Ladder ladder)
