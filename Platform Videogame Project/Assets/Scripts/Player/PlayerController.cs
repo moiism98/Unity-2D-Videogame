@@ -67,12 +67,7 @@ public class PlayerController : MonoBehaviour
 
         health = maxHealth;
 
-        spawnPoint = GameObject.FindGameObjectWithTag("Spawn Point").transform;
-
-        if(spawnPoint != null)
-        {
-            gameObject.transform.position = spawnPoint.position;
-        }
+        //SetPlayerSpawnPoint();
     }
 
     private void Update()
@@ -116,6 +111,16 @@ public class PlayerController : MonoBehaviour
 
         if(isHurt)
             rb.AddForce(new Vector2(-direction * jumpForce, Mathf.Abs(direction) * 1.5f), ForceMode2D.Impulse);
+    }
+
+    public void SetPlayerSpawnPoint()
+    {
+        spawnPoint = GameObject.FindGameObjectWithTag("Spawn Point").transform;
+
+        if(spawnPoint != null)
+        {
+            gameObject.transform.position = spawnPoint.position;
+        }
     }
     public void Walk(InputAction.CallbackContext walk)
     {

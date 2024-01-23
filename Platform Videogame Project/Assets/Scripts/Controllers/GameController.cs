@@ -7,8 +7,13 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
+    [Header("Static variables")]
+    private static int sScore;
+    private static int sBonusScore;
+    private static int sPlayerLifes;
 
     [Header("Level")]
+    [SerializeField] private GameObject player;
     [SerializeField] private GameAction action = GameAction.none;
     [HideInInspector] public GameMode gameMode = GameMode.regular;
     public static bool levelComplete = false;
@@ -43,7 +48,9 @@ public class GameController : MonoBehaviour
         public static bool isGamePaused = false;
 
         [Header("Game Over UI")]
-        [SerializeField] GameObject gameOverScreen;
+        [HideInInspector] public GameObject gameOverScreen;
+        [HideInInspector] public Button retryButton;
+        [HideInInspector] public Button quitButton;
         public static bool isGameOver = false;
 
 
@@ -69,35 +76,16 @@ public class GameController : MonoBehaviour
 
     [Header("Climb variables")]
     private Ladder ladder;
-    private static GameController instance;
 
     private void Awake()
     {
-        if(instance == null)
-            instance = this;
-        else
-            Destroy(gameObject);
-
-        DontDestroyOnLoad(gameObject);
-
-        DontDestroyOnLoad(gameUIPanel);
-    }
-
-    private void Start()
-    {
         LoadInitialLevel();
 
+        SetInitalUI();
+    }
+    private void Start()
+    {
         Invoke("StopTransition", transitionTime);
-
-        gameUIPanel.SetActive(false);
-
-        transitionScreen.SetActive(true);
-
-        bonusTransitionScreen.SetActive(false);
-
-        gameOverScreen.SetActive(false);
-
-        pauseScreen.SetActive(isGamePaused);
 
         playerController = FindObjectOfType<PlayerController>();
 
@@ -140,7 +128,9 @@ public class GameController : MonoBehaviour
 
         keysText.text = keysCollected.ToString();
 
-        transitionScore.text = scoreText.text;
+        transitionScore.text = "Score: " + scoreText.text;
+
+        sPlayerLifes = playerLifes;
 
         transitionLifes.text = playerLifes.ToString();
 
@@ -151,7 +141,22 @@ public class GameController : MonoBehaviour
             bonusTransitionScreen.SetActive(true);
 
             Invoke("StopTransition", transitionTime);
+
+            Debug.Log(scoreText.text);
         }
+    }
+
+    private void SetInitalUI()
+    {
+        gameUIPanel.SetActive(false);
+
+        transitionScreen.SetActive(true);
+
+        bonusTransitionScreen.SetActive(false);
+
+        gameOverScreen.SetActive(false);
+
+        pauseScreen.SetActive(isGamePaused);
     }
 
     private void LoadInitialLevel()
@@ -165,7 +170,11 @@ public class GameController : MonoBehaviour
             currentStage = selectedLevel.GetStages()[0];
 
             currentStageText.text = currentStage.GetIndex().ToString();
+
+            Instantiate(currentStage.GetStage(), transform.position, Quaternion.identity);
         }
+
+        Instantiate(player, GameObject.FindGameObjectWithTag("Spawn Point").transform.position, Quaternion.identity);
     }
 
     public void LoadNextLevel()
@@ -186,6 +195,27 @@ public class GameController : MonoBehaviour
             break;
         }
         
+    }
+
+    public void Retry()
+    {
+        Time.timeScale = 1f;
+
+        Destroy(GameObject.FindGameObjectWithTag("Player"));
+
+        isGameOver = !isGameOver;
+
+        SetInitalUI();
+
+        Destroy(GameObject.FindGameObjectWithTag("Level"));
+
+        Instantiate(currentStage.GetStage(), transform.position, Quaternion.identity);
+
+        Instantiate(player, GameObject.FindGameObjectWithTag("Spawn Point").transform.position, Quaternion.identity);
+
+        SetPlayerHealth();
+
+        Invoke("StopTransition", transitionTime);
     }
 
     private void StopTransition()
@@ -262,6 +292,8 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(.1f);
 
         scoreText.text = newScore.ToString();
+
+        sScore = newScore;
     }
     
     /// <summary>
@@ -287,6 +319,17 @@ public class GameController : MonoBehaviour
     /// <param name="controllerInUse"></param>
     private void SetPlayerHealth()
     {
+        Transform[] previousHearts = healthContainer.GetComponentsInChildren<Transform>();
+
+        if(previousHearts != null && previousHearts.Length > 0)
+        {
+            foreach(Transform heart in previousHearts)
+            {
+                if(heart.name.Contains("Heart"))
+                    Destroy(heart.gameObject);
+            }
+        }
+
         for(int hearts = 0; hearts < playerController.GetMaxHealth(); hearts++)
         {
             Instantiate(heart, healthContainer.transform);
@@ -391,6 +434,8 @@ public class GameController : MonoBehaviour
             currentLifes++;
 
             SetPlayerLifes(currentLifes);
+
+            playerLifes = currentLifes;
         }
     }
 
@@ -425,6 +470,17 @@ public class GameController : MonoBehaviour
         gameOverScreen.SetActive(true);
 
         isGameOver = true;
+
+        if(playerLifes != 0)
+        {
+            playerLifes--;
+        }
+        else
+        {
+            /*retryButton.interactable = false;
+
+            quitButton.Select();*/
+        }
     }
 
     private void DisableEnemyHitPoint()

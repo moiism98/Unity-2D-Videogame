@@ -17,6 +17,12 @@ public class GameControllerEditor : Editor
         {
             case GameMode.regular: 
 
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("gameOverScreen"));
+
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("retryButton"));
+
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("quitButton"));
+
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("currentStageText"));
 
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("lastStageText"));

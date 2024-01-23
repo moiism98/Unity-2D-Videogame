@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 public class DeviceController : MonoBehaviour
@@ -22,7 +23,34 @@ public class DeviceController : MonoBehaviour
     {   
         DetectDeviceInUse();
 
-        Debug.Log(playerInput.currentActionMap);
+        //Debug.Log(playerInput.currentActionMap);
+
+        // we have to store the player controller whenever it's value is null because we need to use it's actions as jump, run, walk and so on.
+        // when the player dies, we disapear it and this also happens to the Player Controller script.
+
+        if(playerController != null) 
+            playerController = FindObjectOfType<PlayerController>();
+    }
+
+    /// <summary>
+    /// Method which is going to trigger the player input events using the Player Controller script where the actions are stored.
+    /// </summary>
+    /// <param name="ctx"></param> <summary>
+    /// 
+    /// </summary>
+    /// <param name="ctx"></param>
+    public void SetEvent(InputAction.CallbackContext ctx)
+    {
+        switch (ctx.action.name)
+        {
+           case "Walk": playerController.Walk(ctx); break;
+           case "Run": playerController.Run(ctx); break;
+           case "Jump": playerController.Jump(ctx); break;
+           case "Crouch": playerController.Crouch(ctx); break;
+           case "Climb": playerController.Climb(ctx); break;
+           case "PassThroughPlatform": playerController.PassThroughPlatform(ctx); break;
+           case "Shoot": playerController.Shoot(ctx); break;
+        }
     }
 
     private void DetectDeviceInUse()

@@ -8,11 +8,14 @@ public class MenuController : MonoBehaviour
     [HideInInspector] public Scene scene = Scene.main;
     [HideInInspector] public RuntimeAnimatorController[] animatorControllers;
     [HideInInspector] public Animator animator; // action animator which shows what UI should show to the player (keyboard, xbox or ps UI)
+    private GameController gameController;
     private DeviceController deviceController;
     private PlayerController playerController;
     
     private void Start()
     {
+        gameController = FindObjectOfType<GameController>();
+
         playerController = FindObjectOfType<PlayerController>();
 
         deviceController = FindObjectOfType<DeviceController>();
@@ -49,13 +52,9 @@ public class MenuController : MonoBehaviour
     {
         // the scene loaded could change, in this case we are loading the current scene because it is the only one being used!
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //SceneManager.LoadScene("GameScene");
 
-        // we reset the game states
-
-        Time.timeScale = 1f;
-
-        GameController.isGameOver = !GameController.isGameOver;
+        gameController.Retry();
     }
     public void QuitGame()
     {
