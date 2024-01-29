@@ -32,8 +32,8 @@ public class MenuController : MonoBehaviour
         if(press.performed)
         {
             SceneManager.LoadScene("GameScene");
-
-            Time.timeScale = 1;
+        
+            Time.timeScale = 0.0f;
         }
     }
 
@@ -50,10 +50,6 @@ public class MenuController : MonoBehaviour
     }
     public void RetryGame()
     {
-        // the scene loaded could change, in this case we are loading the current scene because it is the only one being used!
-
-        //SceneManager.LoadScene("GameScene");
-
         gameController.Retry();
     }
     public void QuitGame()

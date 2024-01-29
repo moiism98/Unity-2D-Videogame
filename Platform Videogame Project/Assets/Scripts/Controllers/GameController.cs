@@ -4,13 +4,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     [Header("Static variables")]
-    private static int sScore;
-    private static int sBonusScore;
-    private static int sPlayerLifes;
+    private int totalScore = 0;
+    private int levelScore = 0;
+    private int sBonusScore;
+    private int playerLifes;
 
     [Header("Level")]
     [SerializeField] private GameObject player;
@@ -35,7 +37,7 @@ public class GameController : MonoBehaviour
         [Header("Transition")]
         [SerializeField] private GameObject transitionScreen;
         [SerializeField] private GameObject bonusTransitionScreen;
-        [SerializeField] private float transitionTime = 5f;
+        [SerializeField] private float transitionTime = 3.5f;
         [SerializeField] private TextMeshProUGUI transitionScore;
         [SerializeField] private TextMeshProUGUI transitionLifes;
         [HideInInspector] public TextMeshProUGUI currentStageText;
@@ -60,7 +62,7 @@ public class GameController : MonoBehaviour
 
         [Header("Player Lifes")]
         [SerializeField] private TextMeshProUGUI lifesText;
-        [SerializeField] private int playerLifes = 0;
+        [SerializeField] private int startingLifes = 3;
         [SerializeField] private int fruits4lifes = 3;
         [SerializeField] private int fruits = 0;
 
@@ -85,38 +87,26 @@ public class GameController : MonoBehaviour
     }
     private void Start()
     {
-        Invoke("StopTransition", transitionTime);
-
         playerController = FindObjectOfType<PlayerController>();
 
         deviceController = FindObjectOfType<DeviceController>();
+
+        StartCoroutine(ResetTimeScale());
+
+        playerLifes = startingLifes;
 
         SetPlayerHealth();
 
         // we suscribe the method to the game events
 
-        Key.OnKeyCollect += CollectKey;
+        GameEvents();
 
-        Gem.OnGemCollect += IncreseScore;
-
-        Heart.OnHeartCollect += HealPlayer;
-
-        Fruit.OnFruitCollect += CollectFruit;
-
-        EnemyController.OnEnemyDie += IncreseScore;
-
-        // this is when the game starts for the first time and not when there is a saved values! 
-
-        scoreText.text = "0";
-
-        lifesText.text = playerLifes.ToString();
-
-        DisableEnemyHitPoint();
+        DisableEnemyHitPoint(); // this is only for the regular game mode!
     }
     
     private void Update()
     {
-        // if we are close to a ladder in the level, we can show the corresponding controller button (based in which controller are we using right now)
+        // if we are close to a ladder in the level, we can show the corresponding controller button (based in which controller we are using right now)
 
         ladder?.ShowControllerButton();
 
@@ -124,17 +114,9 @@ public class GameController : MonoBehaviour
 
         FruitsForLifes();
 
-        lifesText.text = playerLifes.ToString();
+        UpdateScore();
 
-        keysText.text = keysCollected.ToString();
-
-        transitionScore.text = "Score: " + scoreText.text;
-
-        sPlayerLifes = playerLifes;
-
-        transitionLifes.text = playerLifes.ToString();
-
-        if(gameMode.Equals(GameMode.bonus) && !transitionLoaded)
+        /*if(gameMode.Equals(GameMode.bonus) && !transitionLoaded)
         {
             transitionLoaded = true;
 
@@ -143,7 +125,7 @@ public class GameController : MonoBehaviour
             Invoke("StopTransition", transitionTime);
 
             Debug.Log(scoreText.text);
-        }
+        }*/
     }
 
     private void SetInitalUI()
@@ -177,6 +159,19 @@ public class GameController : MonoBehaviour
         Instantiate(player, GameObject.FindGameObjectWithTag("Spawn Point").transform.position, Quaternion.identity);
     }
 
+    private void GameEvents()
+    {
+        Key.OnKeyCollect += CollectKey;
+
+        Gem.OnGemCollect += IncreseScore;
+
+        Heart.OnHeartCollect += HealPlayer;
+
+        Fruit.OnFruitCollect += CollectFruit;
+
+        EnemyController.OnEnemyDie += IncreseScore;
+    }
+
     public void LoadNextLevel()
     {
         switch(gameMode)
@@ -189,7 +184,7 @@ public class GameController : MonoBehaviour
 
                     SceneManager.LoadScene("BonusScene");
 
-                    Time.timeScale = 0f;
+                    Time.timeScale = 0.0f;
                 }
 
             break;
@@ -199,8 +194,19 @@ public class GameController : MonoBehaviour
 
     public void Retry()
     {
-        Time.timeScale = 1f;
+        if(playerLifes >= 0)
+            ReloadLevel();
+        else
+            ReloadScene();
+    }
 
+    /// <summary>
+    /// Reload the current level the player is playing and where he dies in, resets the current levels score earned and put everything back in place again.
+    /// </summary> <summary>
+    /// 
+    /// </summary>
+    private void ReloadLevel()
+    {
         Destroy(GameObject.FindGameObjectWithTag("Player"));
 
         isGameOver = !isGameOver;
@@ -211,17 +217,47 @@ public class GameController : MonoBehaviour
 
         Instantiate(currentStage.GetStage(), transform.position, Quaternion.identity);
 
+        arrow.SetActive(false);
+
         Instantiate(player, GameObject.FindGameObjectWithTag("Spawn Point").transform.position, Quaternion.identity);
 
         SetPlayerHealth();
 
-        Invoke("StopTransition", transitionTime);
+        totalScore -= levelScore;
+
+        levelScore = 0;
+
+        StartCoroutine(ResetTimeScale());
+    }
+
+    /// <summary>
+    /// Reloads the game scene, its happens when the player ran out of lives and he has to start the game again.
+    /// </summary> <summary>
+    /// 
+    /// </summary>
+    private void ReloadScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    /// <summary>
+    /// Resets the time scale using the unscaled time, this allows us to show the transition screens while the game is paused.
+    /// </summary>
+    /// <returns></returns> <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator ResetTimeScale()
+    {
+        yield return new WaitForSecondsRealtime(transitionTime);
+
+        Time.timeScale = 1.0f;
+
+        StopTransition();
     }
 
     private void StopTransition()
-    {
-        Time.timeScale = 1;            
-        
+    { 
         switch(gameMode)
         {
             case GameMode.regular: transitionScreen.SetActive(false); break;
@@ -257,7 +293,7 @@ public class GameController : MonoBehaviour
 
             pausedSelectedButton.Select(); // every time we pause the game put this button as first button selected!
 
-            Time.timeScale = 0f;
+            Time.timeScale = 0.0f;
 
             deviceController.UpdateGameActions("Menu");
         }
@@ -265,10 +301,39 @@ public class GameController : MonoBehaviour
         {
             pauseScreen.SetActive(false);
 
-            Time.timeScale = 1f;
+            Time.timeScale = 1.0f;
 
             deviceController.UpdateGameActions("Player");
         }
+    }
+    public void ShowGameOverMenu()
+    {
+        Time.timeScale = 0.0f;
+
+        gameOverScreen.SetActive(true);
+
+        isGameOver = true;
+
+        playerLifes--;
+    }
+
+    private void UpdateScore()
+    {
+        keysText.text = keysCollected.ToString();
+
+        scoreText.text = totalScore.ToString();
+
+        if(playerLifes >= 0)
+            lifesText.text = playerLifes.ToString();
+        else lifesText.text = "0";
+
+        transitionLifes.text = playerLifes.ToString();
+
+        transitionScore.text = "Score: " + scoreText.text;
+
+        /*Debug.Log("Total score: " + totalScore);
+
+        Debug.Log("Level score: " + levelScore);*/
     }
 
     /// <summary>
@@ -277,7 +342,8 @@ public class GameController : MonoBehaviour
     /// <param name="gemValue"></param>
     private void IncreseScore(int score)
     {
-        StartCoroutine(SetNewScore(score)); 
+        if(this != null)
+            StartCoroutine(SetNewScore(score)); 
     }
     
     /// <summary>
@@ -287,13 +353,11 @@ public class GameController : MonoBehaviour
     /// <returns></returns>
     private IEnumerator SetNewScore(int score)
     {
-        int newScore = int.Parse(scoreText.text) + score;
+        totalScore = int.Parse(scoreText.text) + score;
+
+        levelScore = totalScore;
 
         yield return new WaitForSeconds(.1f);
-
-        scoreText.text = newScore.ToString();
-
-        sScore = newScore;
     }
     
     /// <summary>
@@ -301,7 +365,6 @@ public class GameController : MonoBehaviour
     /// </summary>
     /// <param name="score"></param>
     /// <param name="scorePosition"></param> <summary>
-    /// 
     /// </summary>
     /// <param name="score"></param>
     /// <param name="scorePosition"></param>
@@ -398,7 +461,8 @@ public class GameController : MonoBehaviour
     /// <param name="fruitScore"></param>
     private void CollectFruit(int fruitScore)
     {
-        StartCoroutine(AddFruit(fruitScore));
+        if(this != null)
+            StartCoroutine(AddFruit(fruitScore));
     }
 
     private IEnumerator AddFruit(int fruitScore)
@@ -441,7 +505,8 @@ public class GameController : MonoBehaviour
 
     private void CollectKey(int key, int keyScore)
     {
-        StartCoroutine(AddKey(key, keyScore));
+        if(this != null)
+            StartCoroutine(AddKey(key, keyScore));
     }
 
     private IEnumerator AddKey(int key, int keyScore)
@@ -462,27 +527,6 @@ public class GameController : MonoBehaviour
             isCollectingItem = false;
         }
     }
-
-    public void ShowGameOverMenu()
-    {
-        Time.timeScale = 0f;
-
-        gameOverScreen.SetActive(true);
-
-        isGameOver = true;
-
-        if(playerLifes != 0)
-        {
-            playerLifes--;
-        }
-        else
-        {
-            /*retryButton.interactable = false;
-
-            quitButton.Select();*/
-        }
-    }
-
     private void DisableEnemyHitPoint()
     {
         if(gameMode.Equals(GameMode.regular))
@@ -518,8 +562,8 @@ public class GameController : MonoBehaviour
         this.ladder = ladder;
     }
 
-    public void SetPlayerLifes(int playerLifes)
+    public void SetPlayerLifes(int startingLifes)
     {
-        this.playerLifes = playerLifes;
+        this.startingLifes = startingLifes;
     }
 }

@@ -156,10 +156,10 @@ public class EnemyController : MonoBehaviour
 
         if(player != null)
         {
-            PlayerController playerControler = player.GetComponent<PlayerController>();
+            PlayerController playerController = player.GetComponent<PlayerController>();
 
-            if(playerControler != null)
-                StartCoroutine(playerControler.TakeDamage(damage));
+            if(playerController != null)
+                StartCoroutine(playerController.TakeDamage(damage));
         }
     }
 
