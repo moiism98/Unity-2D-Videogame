@@ -51,12 +51,12 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "PassThoughPlatforms",
+                    "name": "UnderPlatform",
                     "type": "Button",
                     "id": "ef505dd1-d3f4-4150-a26c-edddc44cd9e5",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Tap",
+                    "interactions": "Press(pressPoint=0.1,behavior=2)",
                     "initialStateCheck": false
                 },
                 {
@@ -233,10 +233,10 @@
                     "name": "",
                     "id": "a1761477-9dfe-41fa-acdb-5fd367a8184d",
                     "path": "<Keyboard>/s",
-                    "interactions": "",
+                    "interactions": "Tap",
                     "processors": "",
                     "groups": "",
-                    "action": "PassThoughPlatforms",
+                    "action": "UnderPlatform",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -247,7 +247,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "PassThoughPlatforms",
+                    "action": "UnderPlatform",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

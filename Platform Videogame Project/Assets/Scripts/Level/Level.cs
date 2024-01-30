@@ -6,7 +6,7 @@ using UnityEngine;
 public class Level
 {
     [SerializeField] private string name;
-    [SerializeField] private List<Stage> stages;
+    [SerializeField] private Stage[] stages;
     [SerializeField] private List<GameObject> bonusLevels;
 
     public string GetName()
@@ -14,12 +14,12 @@ public class Level
         return this.name;
     }
 
-    public List<Stage> GetStages()
+    public Stage[] GetStages()
     {
         return this.stages;
     }
 
-    public List<GameObject> GetBonusLevels()
+    public List<GameObject> GetBonus()
     {
         return this.bonusLevels;
     }

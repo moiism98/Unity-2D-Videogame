@@ -1284,7 +1284,7 @@ GameObject:
   - component: {fileID: 5723256994761207079}
   - component: {fileID: 8812247379204489683}
   m_Layer: 0
-  m_Name: Level 1
+  m_Name: Stage 1
   m_TagString: Level
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15482,7 +15482,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7994882207595409746, guid: 4ddf05c8c65b3ac43abad5bd34a7f04e, type: 3}
       propertyPath: m_Name
-      value: SpawnPoint
+      value: Spawn Point
       objectReference: {fileID: 0}
     - target: {fileID: 7994882207595409746, guid: 4ddf05c8c65b3ac43abad5bd34a7f04e, type: 3}
       propertyPath: m_IsActive

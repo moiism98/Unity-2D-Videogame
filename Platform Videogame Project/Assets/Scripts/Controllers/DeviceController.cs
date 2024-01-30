@@ -48,7 +48,7 @@ public class DeviceController : MonoBehaviour
            case "Jump": playerController.Jump(ctx); break;
            case "Crouch": playerController.Crouch(ctx); break;
            case "Climb": playerController.Climb(ctx); break;
-           case "PassThroughPlatform": playerController.PassThroughPlatform(ctx); break;
+           case "UnderPlatform": playerController.UnderPlatform(ctx); break;
            case "Shoot": playerController.Shoot(ctx); break;
         }
     }
@@ -90,7 +90,7 @@ public class DeviceController : MonoBehaviour
             {
                 switch(gameController.GetGameAction())
                 {
-                    case GameAction.exit: gameController.LoadNextLevel(); break;
+                    case GameAction.exit: gameController.LoadNextStage(); break;
 
                     case GameAction.lever: lever.Activate(); break;
 

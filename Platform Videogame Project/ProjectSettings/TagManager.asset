@@ -77,6 +77,6 @@ TagManager:
   - name: Player
     uniqueID: 4257236407
     locked: 0
-  - name: SpecialBush
+  - name: Hidden Zone
     uniqueID: 781984211
     locked: 0

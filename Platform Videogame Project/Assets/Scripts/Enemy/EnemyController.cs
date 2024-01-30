@@ -138,7 +138,7 @@ public class EnemyController : MonoBehaviour
         {
             Vector2 dropSpawnPoint = new Vector2(transform.position.x, transform.position.y - .3f);
         
-            Instantiate(heartPrefab, dropSpawnPoint, Quaternion.identity);
+            Instantiate(heartPrefab, dropSpawnPoint, Quaternion.identity, GameObject.FindGameObjectWithTag("Level").transform);
         }
     }
 

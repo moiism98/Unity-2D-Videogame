@@ -4,18 +4,18 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     [Header("Static variables")]
+    private int stageID = 1;
     private int totalScore = 0;
     private int levelScore = 0;
     private int sBonusScore;
     private int playerLifes;
 
     [Header("Level")]
-    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameAction action = GameAction.none;
     [HideInInspector] public GameMode gameMode = GameMode.regular;
     public static bool levelComplete = false;
@@ -69,7 +69,7 @@ public class GameController : MonoBehaviour
         [Header("Keys")]
         [HideInInspector] public TextMeshProUGUI keysText;
         public static int keysCollected = 0;
-        public static int keysToCollect = 5; // 5 keys
+        public static int keysToCollect = 1; // 5 keys
     public static bool isArrowReady = false;
 
     [Header("Controllers")]
@@ -81,7 +81,7 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
-        LoadInitialLevel();
+        LoadInitialStage();
 
         SetInitalUI();
     }
@@ -128,6 +128,65 @@ public class GameController : MonoBehaviour
         }*/
     }
 
+    /// <summary>
+    /// Loads the current level stage and also reloads the player and his spawn position.
+    /// </summary>
+    private void LoadStage()
+    {
+        GameObject level = GameObject.FindGameObjectWithTag("Level");
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+        if(level != null && player != null) // if we found a level and a player we destroy them to load a new ones!
+        {
+            Destroy(level);
+
+            Destroy(player);
+        }
+
+        GameObject stage = null;
+
+        switch(gameMode)
+        {
+            case GameMode.regular: stage = SelectStage().GetStage(); break; // if regular mode, load the correspondant stage of the level
+
+            case GameMode.bonus: 
+
+                int randomBonus = UnityEngine.Random.Range(0, selectedLevel.GetBonus().Count); // if it is a bonus level we load a random bonus stage!
+            
+                stage = selectedLevel.GetBonus()[randomBonus]; 
+                
+            break;
+        }
+
+        if(stage != null) // if we've found the correspondant stage, we instantiate it!
+            Instantiate(stage, transform.position, Quaternion.identity);
+        
+        // and also we have to find, among the instantiated stage's gameObject childrens, the spawn point to set the players position!
+
+        Transform[] stageGameObjectChilds = stage.GetComponentsInChildren<Transform>();
+
+        Transform spawnPoint = Array.Find(stageGameObjectChilds, stgCh => stgCh.name.Equals("Spawn Point"));
+
+        Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity);
+    }
+
+    /// <summary>
+    /// Selects a stage to load from the level's stage array. We select the correspondant one based on the stage ID.
+    /// </summary>
+    /// <returns></returns>
+    private Stage SelectStage()
+    {
+        Stage[] levelStages = selectedLevel.GetStages();
+
+        Stage stage = Array.Find(levelStages, stage => stage.GetIndex().Equals(stageID));
+
+        if(stage != null)
+            currentStageText.text = stage.GetIndex().ToString();
+
+        return stage;
+    }
+
     private void SetInitalUI()
     {
         gameUIPanel.SetActive(false);
@@ -141,22 +200,16 @@ public class GameController : MonoBehaviour
         pauseScreen.SetActive(isGamePaused);
     }
 
-    private void LoadInitialLevel()
+    private void LoadInitialStage()
     {
         selectedLevel = Array.Find(levels, level => level.GetName().Equals(levelName));
 
         if(selectedLevel != null)
         {
-            lastStageText.text = selectedLevel.GetStages().Count.ToString();
+            lastStageText.text = selectedLevel.GetStages().Length.ToString();
 
-            currentStage = selectedLevel.GetStages()[0];
-
-            currentStageText.text = currentStage.GetIndex().ToString();
-
-            Instantiate(currentStage.GetStage(), transform.position, Quaternion.identity);
+            LoadStage();
         }
-
-        Instantiate(player, GameObject.FindGameObjectWithTag("Spawn Point").transform.position, Quaternion.identity);
     }
 
     private void GameEvents()
@@ -172,7 +225,7 @@ public class GameController : MonoBehaviour
         EnemyController.OnEnemyDie += IncreseScore;
     }
 
-    public void LoadNextLevel()
+    public void LoadNextStage()
     {
         switch(gameMode)
         {
@@ -180,11 +233,17 @@ public class GameController : MonoBehaviour
 
                 if(levelComplete && Exit.nearExit)
                 {
-                    gameMode = GameMode.bonus;
+                    //gameMode = GameMode.bonus;
 
-                    SceneManager.LoadScene("BonusScene");
+                    stageID++;
+
+                    LoadStage();
 
                     Time.timeScale = 0.0f;
+
+                    PlayTransition(); // code this method, tho show the transition screen again!
+
+                    StartCoroutine(ResetTimeScale());
                 }
 
             break;
@@ -213,13 +272,9 @@ public class GameController : MonoBehaviour
 
         SetInitalUI();
 
-        Destroy(GameObject.FindGameObjectWithTag("Level"));
-
-        Instantiate(currentStage.GetStage(), transform.position, Quaternion.identity);
-
         arrow.SetActive(false);
 
-        Instantiate(player, GameObject.FindGameObjectWithTag("Spawn Point").transform.position, Quaternion.identity);
+        SelectStage();
 
         SetPlayerHealth();
 
@@ -254,6 +309,14 @@ public class GameController : MonoBehaviour
         Time.timeScale = 1.0f;
 
         StopTransition();
+    }
+
+    private void PlayTransition()
+    {
+        if(gameMode.Equals(GameMode.regular))
+            transitionScreen.SetActive(true);
+        else
+            bonusTransitionScreen.SetActive(true);
     }
 
     private void StopTransition()

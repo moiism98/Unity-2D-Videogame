@@ -197,7 +197,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void PassThroughPlatform(InputAction.CallbackContext passThroughPlatform)
+    public void UnderPlatform(InputAction.CallbackContext underPlatform)
     {
         /*
             we have to add the "tap" interaction to the input action because we are using the same buttons we use for crouching!
@@ -206,7 +206,7 @@ public class PlayerController : MonoBehaviour
             if we release the button the player will pass through the platform whenever we stop crouching, we do not want that, only when we tap the button!
         */
         
-        if(passThroughPlatform.performed) 
+        if(underPlatform.performed) 
         {
             if(AbovePlatform()) // we check if we are above a platform so we can pass through it.
                 StartCoroutine(JumpUnderPlatform());
@@ -331,7 +331,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator JumpUnderPlatform() 
     {
 
-        // disable the player's capsule collider (his body)
+        // disable the player's capsule collider (his body), we do not want enemies pass under the platforms!
 
         CapsuleCollider2D [] playerColliders = gameObject.GetComponents<CapsuleCollider2D>();
 
@@ -348,6 +348,7 @@ public class PlayerController : MonoBehaviour
             col.enabled = true;
 
         isjumpingUnderPlatform = false;
+
     }
 
     public void Shoot(InputAction.CallbackContext shoot)

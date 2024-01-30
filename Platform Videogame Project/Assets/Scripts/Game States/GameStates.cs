@@ -44,3 +44,9 @@ public enum GameAction
     climb,
     lever
 }
+
+public enum HiddenZoneType
+{
+    tilemap,
+    gameObject
+}
