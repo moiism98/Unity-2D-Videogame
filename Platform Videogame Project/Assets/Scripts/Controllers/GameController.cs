@@ -136,10 +136,10 @@ public class GameController : MonoBehaviour
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
 
-        if(level != null && player != null) // if we found a level and a player we destroy them to load a new ones!
+        if(level != null) // if we found a level and a player we destroy them to load a new ones!
         {
             Destroy(level);
-
+        
             Destroy(player);
         }
 
@@ -161,11 +161,9 @@ public class GameController : MonoBehaviour
         if(stage != null) // if we've found the correspondant stage, we instantiate it!
             Instantiate(stage, transform.position, Quaternion.identity);
         
-        // and also we have to find, among the instantiated stage's gameObject childrens, the spawn point to set the players position!
+        // and finally spawn a player again
 
-        Transform[] stageGameObjectChilds = stage.GetComponentsInChildren<Transform>();
-
-        Transform spawnPoint = Array.Find(stageGameObjectChilds, stgCh => stgCh.name.Equals("Spawn Point"));
+        Transform spawnPoint = GameObject.FindGameObjectWithTag("Spawn Point").transform;
 
         Instantiate(selectedLevel.GetPlayer(), spawnPoint.position, Quaternion.identity);
     }
@@ -280,7 +278,9 @@ public class GameController : MonoBehaviour
 
         arrow.SetActive(false);
 
-        SelectStage();
+        //SelectStage();
+
+        LoadStage();
 
         SetPlayerHealth();
 

@@ -20,6 +20,12 @@ public class MenuControllerEditor : Editor
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("animatorControllers"));
 
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("animator"));
+
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("action"));
+
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("menu"));
+
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("controlsMenu"));
             
             break;
 

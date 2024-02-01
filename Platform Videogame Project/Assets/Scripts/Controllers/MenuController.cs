@@ -8,17 +8,25 @@ public class MenuController : MonoBehaviour
     [HideInInspector] public Scene scene = Scene.main;
     [HideInInspector] public RuntimeAnimatorController[] animatorControllers;
     [HideInInspector] public Animator animator; // action animator which shows what UI should show to the player (keyboard, xbox or ps UI)
+    [HideInInspector] public GameObject action;
+    [HideInInspector] public GameObject menu;
+    [HideInInspector] public GameObject controlsMenu;
+
     private GameController gameController;
     private DeviceController deviceController;
-    private PlayerController playerController;
     
     private void Start()
     {
         gameController = FindObjectOfType<GameController>();
 
-        playerController = FindObjectOfType<PlayerController>();
-
         deviceController = FindObjectOfType<DeviceController>();
+
+        if(scene.Equals(Scene.main))
+        {
+            menu.SetActive(false);
+
+            controlsMenu.SetActive(false);
+        }
     }
 
     private void Update()
@@ -31,9 +39,34 @@ public class MenuController : MonoBehaviour
     {
         if(press.performed)
         {
-            SceneManager.LoadScene("GameScene");
+            // show play and controls menu
+
+            action.SetActive(false);
+
+            menu.SetActive(true);
+        }
+    }
+
+    public void PlayGame()
+    {
+        SceneManager.LoadScene("GameScene");
         
-            Time.timeScale = 0.0f;
+        Time.timeScale = 0.0f;
+    }
+
+    public void ControlsMenu()
+    {
+        if(controlsMenu.activeSelf)
+        {
+            controlsMenu.SetActive(false);
+
+            menu.SetActive(true);
+        }
+        else
+        {
+            controlsMenu.SetActive(true);
+
+            menu.SetActive(false);
         }
     }
 
