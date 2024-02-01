@@ -8,6 +8,7 @@ public class EagleBehaviour : MonoBehaviour
     [SerializeField] [Range(5f, 20f)] private float rangeOfVision;
     [SerializeField] [Range(1f, 10f)] private float diveSpeed = 5f;
     [SerializeField] [Range(1f, 10f)] private float recoverySpeed = 3f;
+    [SerializeField] [Range(1f, 5f)] private float groundDetectorDistance = 1.25f;
     private bool isAttacking = false;
     private bool resetPosition = false;
     private Vector3 attackDirection;
@@ -75,7 +76,7 @@ public class EagleBehaviour : MonoBehaviour
     private void IsCloseToTheGround()
     {
         if(!resetPosition)
-            resetPosition = enemyController.GroundDetected(transform, enemyController.GetGroundLayer(), 1.25f);
+            resetPosition = enemyController.GroundDetected(transform, enemyController.GetGroundLayer(), groundDetectorDistance);
     }
 
     /// <summary>

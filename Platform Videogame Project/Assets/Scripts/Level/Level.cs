@@ -7,6 +7,7 @@ public class Level
 {
     [SerializeField] private string name;
     [SerializeField] private Stage[] stages;
+    [SerializeField] private GameObject player;
     [SerializeField] private List<GameObject> bonusLevels;
 
     public string GetName()
@@ -17,6 +18,11 @@ public class Level
     public Stage[] GetStages()
     {
         return this.stages;
+    }
+
+    public GameObject GetPlayer()
+    {
+        return this.player;
     }
 
     public List<GameObject> GetBonus()

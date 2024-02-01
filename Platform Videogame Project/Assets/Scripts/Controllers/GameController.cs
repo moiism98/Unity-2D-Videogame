@@ -15,7 +15,6 @@ public class GameController : MonoBehaviour
     private int playerLifes;
 
     [Header("Level")]
-    [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameAction action = GameAction.none;
     [HideInInspector] public GameMode gameMode = GameMode.regular;
     public static bool levelComplete = false;
@@ -168,7 +167,7 @@ public class GameController : MonoBehaviour
 
         Transform spawnPoint = Array.Find(stageGameObjectChilds, stgCh => stgCh.name.Equals("Spawn Point"));
 
-        Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity);
+        Instantiate(selectedLevel.GetPlayer(), spawnPoint.position, Quaternion.identity);
     }
 
     /// <summary>
@@ -234,6 +233,13 @@ public class GameController : MonoBehaviour
                 if(levelComplete && Exit.nearExit)
                 {
                     //gameMode = GameMode.bonus;
+
+                    if(stageID.Equals(selectedLevel.GetStages().Length))
+                    {
+                        // load main menu scene, we end the game!
+
+                        SceneManager.LoadScene("MainScene");
+                    }
 
                     stageID++;
 

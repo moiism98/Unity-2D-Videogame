@@ -393,9 +393,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6372231582384927823}
     - target: {fileID: 1053792173397708734, guid: 622f43402642d49498a3ba69942112b9, type: 3}
+      propertyPath: levels.Array.data[0].player
+      value: 
+      objectReference: {fileID: 3645349186685275371, guid: 731c8c0647403d6498c964967e95072c, type: 3}
+    - target: {fileID: 1053792173397708734, guid: 622f43402642d49498a3ba69942112b9, type: 3}
+      propertyPath: levels.Array.data[0].bonusLevels.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1053792173397708734, guid: 622f43402642d49498a3ba69942112b9, type: 3}
       propertyPath: levels.Array.data[0].stages.Array.data[0].stage
       value: 
-      objectReference: {fileID: 2811020172554550052, guid: 47e3ffb4442f6b74b9848db168d412c9, type: 3}
+      objectReference: {fileID: 4500006582578821251, guid: 9f907773bfc607c48a2508c3298375bd, type: 3}
     - target: {fileID: 1053792173397708734, guid: 622f43402642d49498a3ba69942112b9, type: 3}
       propertyPath: levels.Array.data[0].stages.Array.data[1].stage
       value: 
@@ -713,6 +721,10 @@ PrefabInstance:
     - target: {fileID: 3856255806304810570, guid: c2694996ed185f14ab6c6b757eaab316, type: 3}
       propertyPath: m_Follow
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5480686795040540107, guid: c2694996ed185f14ab6c6b757eaab316, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

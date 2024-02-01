@@ -56,7 +56,7 @@
                     "id": "ef505dd1-d3f4-4150-a26c-edddc44cd9e5",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(pressPoint=0.1,behavior=2)",
+                    "interactions": "",
                     "initialStateCheck": false
                 },
                 {
@@ -244,7 +244,7 @@
                     "name": "",
                     "id": "f822f1bb-91b6-4628-a66c-edf6cb598697",
                     "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
+                    "interactions": "Tap",
                     "processors": "",
                     "groups": "",
                     "action": "UnderPlatform",

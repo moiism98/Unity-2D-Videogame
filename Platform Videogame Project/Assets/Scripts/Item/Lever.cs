@@ -10,6 +10,7 @@ public class Lever : MonoBehaviour
     [SerializeField] private RuntimeAnimatorController[] animatorControllers;
     [SerializeField] private GameObject action;
     [SerializeField] private GameObject bridge;
+    [SerializeField] private bool visible = false;
     private void Start()
     {
         deviceController = FindObjectOfType<DeviceController>();
@@ -20,7 +21,7 @@ public class Lever : MonoBehaviour
 
         animator = GetComponent<Animator>();
 
-        bridge.SetActive(false);
+        bridge.SetActive(visible);
 
         action.SetActive(false);
     }
@@ -61,6 +62,6 @@ public class Lever : MonoBehaviour
 
         action.SetActive(false);
 
-        bridge.SetActive(true);
+        bridge.SetActive(!visible);
     }
 }
