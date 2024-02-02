@@ -1,4 +1,4 @@
-> 2D and classic videogame style!
+> 2D videogame style!
 > A little videogame based on the classics 'Bugs Bunny Crazy Castle' from Game Boy Color.
 
 > [!IMPORTANT]
