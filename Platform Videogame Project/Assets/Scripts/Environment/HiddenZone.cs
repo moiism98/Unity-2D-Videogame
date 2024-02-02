@@ -11,6 +11,7 @@ public class HiddenZone : MonoBehaviour
     [SerializeField] private Color transparentColor;
     private float fadeTime = .5f;
     private bool fadeOut = true;
+    private bool zoneDiscovered = false;
     private Coroutine fadeOutCoroutine;
     void Start()
     {
@@ -22,11 +23,14 @@ public class HiddenZone : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.CompareTag("Player"))
-        {            
-            if(fadeOutCoroutine != null)
-                StopCoroutine(fadeOutCoroutine);
+        {       
+            if(!zoneDiscovered || hiddenZoneType.Equals(HiddenZoneType.gameObject)) // we only want this effect looping on gameObjects, not on tilemaps avoiding some visual bugs!
+            {
+                if(fadeOutCoroutine != null)
+                    StopCoroutine(fadeOutCoroutine);
 
-            fadeOutCoroutine = StartCoroutine(FadeZone(fadeOut));
+                fadeOutCoroutine = StartCoroutine(FadeZone(fadeOut));
+            }    
         }
     }
 
@@ -34,15 +38,20 @@ public class HiddenZone : MonoBehaviour
     {
         if(collision.CompareTag("Player"))
         {
-            if(fadeOutCoroutine != null)
-                StopCoroutine(fadeOutCoroutine);
+            if(hiddenZoneType.Equals(HiddenZoneType.gameObject)) // we only want this effect looping on gameObjects, not on tilemaps avoiding some visual bugs!
+            {
+                if(fadeOutCoroutine != null)
+                    StopCoroutine(fadeOutCoroutine);
 
-            fadeOutCoroutine = StartCoroutine(FadeZone(!fadeOut));
+                fadeOutCoroutine = StartCoroutine(FadeZone(!fadeOut));
+            }
         }
     }
 
     private IEnumerator FadeZone(bool isEnteringOnTheZone)
     {
+        zoneDiscovered = true;
+
         Color startColor = defaultColor;
 
         Color targetColor = transparentColor;
@@ -67,22 +76,6 @@ public class HiddenZone : MonoBehaviour
             timeFading += Time.deltaTime;
 
             yield return null;
-        }
-    }
-
-    private void FadeColor(Color startColor, Color targetColor)
-    {
-        float timeFading = 0f;
-
-        while(timeFading < fadeTime)
-        {
-            switch(hiddenZoneType)
-            {
-                case HiddenZoneType.tilemap: tilemap.color = Color.Lerp(startColor, targetColor, timeFading / fadeTime); break;
-                case HiddenZoneType.gameObject: spriteRenderer.color = Color.Lerp(startColor, targetColor, timeFading / fadeTime); break;
-            }
-
-            timeFading += Time.deltaTime;
         }
     }
 }

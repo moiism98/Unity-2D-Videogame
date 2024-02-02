@@ -41,7 +41,7 @@ public class GameController : MonoBehaviour
         [SerializeField] private TextMeshProUGUI transitionLifes;
         [HideInInspector] public TextMeshProUGUI currentStageText;
         [HideInInspector] public TextMeshProUGUI lastStageText;
-        private bool transitionLoaded = false;
+        // private bool transitionLoaded = false;
 
         [Header("Pause UI")]
         [SerializeField] GameObject pauseScreen;
@@ -195,6 +195,13 @@ public class GameController : MonoBehaviour
         gameOverScreen.SetActive(false);
 
         pauseScreen.SetActive(isGamePaused);
+
+        // set this 2 variables there because we want to reset to default values when the scene is reloaded. 
+        // p.e if you die with an arrow in your pocket and the scene is reloaded (you ran out of lifes), you start the game again with the arrow activated and you can use it!
+
+        isArrowReady = false;
+
+        fruits = 0;
     }
 
     private void LoadInitialStage()
@@ -333,7 +340,7 @@ public class GameController : MonoBehaviour
 
             case GameMode.bonus: 
 
-                transitionLoaded = true;
+                // transitionLoaded = true;
             
                 bonusTransitionScreen.SetActive(false); 
             

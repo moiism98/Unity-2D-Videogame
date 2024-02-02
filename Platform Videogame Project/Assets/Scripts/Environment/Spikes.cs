@@ -1,28 +1,46 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class Spikes : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private float speed = 3f;
     [SerializeField] private float incrementSpeed = 0.01f;
+    [SerializeField] private float speedIncreaseInterval = 7.0f;
     [SerializeField] private CompositeCollider2D tilemapCol;
     [SerializeField] private LayerMask playerLayer;
-    private bool playerDead = false;
+    [SerializeField] private LayerMask spikesLimitLayer;
+    private GameController gameController;
     private bool isIncresingSpeed = false;
 
+    private void Start()
+    {
+        gameController = FindObjectOfType<GameController>();
+    }
     private void Update()
     {
         KillPlayer();
 
-        StartCoroutine(IncrementSpikesSpeed());
+        IncrementSpeed(); // this only happens at bonus levels.
     }
     
     private void FixedUpdate()
     {
-        if(!playerDead)
-            rb.velocity = Vector2.up * speed;  
+        MoveSpikes();
+    }
+
+    private void MoveSpikes()
+    {
+        if(tilemapCol.IsTouchingLayers(spikesLimitLayer) && speed > 0)
+            speed = 0;
+
+        rb.velocity = Vector2.up * speed;     
+    }
+
+    private void IncrementSpeed()
+    {
+        if(gameController.gameMode.Equals(GameMode.bonus))
+            StartCoroutine(IncrementSpikesSpeed());
     }
 
     private void KillPlayer()
@@ -32,12 +50,6 @@ public class Spikes : MonoBehaviour
             PlayerController player = FindObjectOfType<PlayerController>();
 
             StartCoroutine(player.TakeDamage(player.GetMaxHealth()));
-
-            // delete this when death screen it's done
-
-            playerDead = true;
-
-            rb.velocity = Vector2.zero;
         }
     }
 
@@ -49,7 +61,7 @@ public class Spikes : MonoBehaviour
 
             speed += incrementSpeed;
 
-            yield return new WaitForSeconds(7);
+            yield return new WaitForSeconds(speedIncreaseInterval);
 
             isIncresingSpeed = false;
         }
