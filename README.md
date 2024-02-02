@@ -9,9 +9,9 @@
 
 > [!NOTE]
 > Git work states:
-
+>
 > WIP: Work in progress.
-
+>
 > WD: Work done.
-
+>
 > FIX: Error/s fixed or changes added.
