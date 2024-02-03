@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EagleBehaviour : MonoBehaviour
@@ -15,6 +14,7 @@ public class EagleBehaviour : MonoBehaviour
     private EnemyController enemyController;
     private Rigidbody2D eagleRb;
     private Animator animator;
+
     void Start()
     {
         enemyController = GetComponent<EnemyController>();
@@ -27,13 +27,11 @@ public class EagleBehaviour : MonoBehaviour
     
     void Update()
     {
-        attackDirection = NewAttackDirection();
-
         animator.SetBool("IsAttacking", isAttacking);
 
         if(!isAttacking && !resetPosition) // only when the eagle is flying will try to find the player again.
         {
-            enemyController.SetDirection(NewDirection()); 
+            enemyController.SetDirection(EagleDirection()); 
 
             if(FoundPlayer())
                 isAttacking = true;
@@ -69,7 +67,7 @@ public class EagleBehaviour : MonoBehaviour
     }
 
     /// <summary>
-    /// Detects the nearby ground and triggers the StaringAtPlayer coroutine.
+    /// Detects if there is ground nearby to stop eagle's attack by triggering the StaringAtPlayer coroutine.
     /// </summary> <summary>
     /// 
     /// </summary>
@@ -115,37 +113,23 @@ public class EagleBehaviour : MonoBehaviour
         }
     }
      /// <summary>
-     /// This method will set the eagle's direction based on where the player it's located.
+     /// This method will set the eagle's direction and attack direction based on where the player it's located.
      /// </summary>
      /// <returns></returns>
-    private float NewDirection()
+    private float EagleDirection()
     {
-        float direction;
+        float eagleDirection;
 
         if(GameObject.FindGameObjectWithTag("Player").transform.position.x - transform.position.x < 0)
-            direction = -1;
+            eagleDirection = -1;
         else
-            direction = 1;
+            eagleDirection = 1;
 
-        return direction;
-    }
+        // eagleDirection (x) = -1 -> attack left
+        // eagleDirection (x) = 1 -> attack right
 
-    /// <summary>
-    /// This method will set the eagle's attack direction based where is he facing at.
-    /// </summary>
-    /// <returns></returns> <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    private Vector2 NewAttackDirection()
-    {
-        Vector2 newAttackDirection;
+        attackDirection = new Vector2(eagleDirection, -1); 
 
-        if(enemyController.GetDirection() < 0)
-            newAttackDirection = new Vector2(enemyController.GetDirection(), enemyController.GetDirection());
-        else
-           newAttackDirection = new Vector2(enemyController.GetDirection(), -enemyController.GetDirection());
-
-        return newAttackDirection;
+        return eagleDirection;
     }
 }

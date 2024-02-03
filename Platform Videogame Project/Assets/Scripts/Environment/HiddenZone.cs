@@ -15,11 +15,9 @@ public class HiddenZone : MonoBehaviour
     private Coroutine fadeOutCoroutine;
     void Start()
     {
-        if(hiddenZoneType.Equals(HiddenZoneType.tilemap))
-            defaultColor = tilemap.color;
-        else
-            defaultColor = spriteRenderer.color;        
+        SetDefaultColor();        
     }
+    
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.CompareTag("Player"))
@@ -48,6 +46,15 @@ public class HiddenZone : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Triggers the hidden zone's fade effect when detects the player nearby.
+    /// </summary>
+    /// <param name="isEnteringOnTheZone"></param>
+    /// <returns></returns> <summary>
+    /// 
+    /// </summary>
+    /// <param name="isEnteringOnTheZone"></param>
+    /// <returns></returns>
     private IEnumerator FadeZone(bool isEnteringOnTheZone)
     {
         zoneDiscovered = true;
@@ -77,5 +84,16 @@ public class HiddenZone : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    /// <summary>
+    /// Sets the hidden zone's default color.
+    /// </summary>
+    private void SetDefaultColor()
+    {
+        if(hiddenZoneType.Equals(HiddenZoneType.tilemap))
+            defaultColor = tilemap.color;
+        else
+            defaultColor = spriteRenderer.color;
     }
 }

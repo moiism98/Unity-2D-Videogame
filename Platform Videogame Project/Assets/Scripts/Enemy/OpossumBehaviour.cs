@@ -36,11 +36,25 @@ public class OpossumBehaviour : MonoBehaviour
         enemyController.ChangeEnemyDirection();
     }
 
+    /// <summary>
+    /// Uses the Enemy Controller's wall detector to swap enemy's direction.
+    /// </summary>
+    /// <returns></returns> <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     private bool WallDetected()
     {
         return enemyController.WallDetected(checkInUse, checkSize, enemyController.GetGroundLayer());
     }
 
+    /// <summary>
+    /// Uses the Enemy Controller's ground detector to swap enemy's direction.
+    /// </summary>
+    /// <returns></returns> <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     private bool GroundDetected()
     {
         return enemyController.GroundDetected(checkInUse, enemyController.GetGroundLayer(), 2f);

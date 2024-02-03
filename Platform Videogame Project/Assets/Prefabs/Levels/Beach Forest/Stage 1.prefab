@@ -9091,6 +9091,10 @@ PrefabInstance:
       propertyPath: fliped
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5176715321690159006, guid: bccc0e279e34f3247925d726616f654c, type: 3}
+      propertyPath: moveSpeed
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5996886090201432843, guid: bccc0e279e34f3247925d726616f654c, type: 3}
       propertyPath: m_Name
       value: Opossum (1)
@@ -9101,7 +9105,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7205135193175225811, guid: bccc0e279e34f3247925d726616f654c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 11.78
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: 7205135193175225811, guid: bccc0e279e34f3247925d726616f654c, type: 3}
       propertyPath: m_LocalPosition.y

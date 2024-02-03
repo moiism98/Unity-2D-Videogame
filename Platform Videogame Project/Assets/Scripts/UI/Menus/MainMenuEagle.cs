@@ -29,6 +29,13 @@ public class MainMenuEagle : MonoBehaviour
         StartCoroutine(Move());
     }
 
+    /// <summary>
+    /// The eagle will move back and forward until the end of its days.
+    /// </summary>
+    /// <returns></returns> <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator Move()
     {
         if(!isMoving)
@@ -40,8 +47,6 @@ public class MainMenuEagle : MonoBehaviour
             yield return new WaitForSeconds(moveTime);
 
             direction *= -1;
-
-            //rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
 
             isMoving = false;
         }

@@ -59,6 +59,9 @@ public class Ladder : MonoBehaviour
             HideClimbUI();
     }
 
+    /// <summary>
+    /// Displays the climb action UI on the screen.
+    /// </summary>
     private void ShowClimbUI()
     {
         // we can climb
@@ -72,6 +75,11 @@ public class Ladder : MonoBehaviour
         gameController.SetGameAction(GameAction.climb);
     }
 
+    /// <summary>
+    /// Hides the climb action UI from the screen.
+    /// </summary> <summary>
+    /// 
+    /// </summary>
     private void HideClimbUI()
     {
         // we can not climb, we are far from the ladder
@@ -89,6 +97,9 @@ public class Ladder : MonoBehaviour
         gameController.SetGameAction(GameAction.none);
     }
 
+    /// <summary>
+    /// Displays the correspondant (keyboard or gamepad) UI.
+    /// </summary>
     public void ShowControllerButton()
     {
         deviceController.ShowDeviceUI(animator, animatorControllers);
@@ -96,6 +107,9 @@ public class Ladder : MonoBehaviour
         buttonBubble.SetActive(true);
     }
 
+    /// <summary>
+    /// Hides the correspondant (keyboard or gamepad) UI.
+    /// </summary>
     public void HideControllerButton()
     {
         buttonBubble.SetActive(false);

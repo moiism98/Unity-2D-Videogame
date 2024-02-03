@@ -34,6 +34,13 @@ public class MainMenuFrog : MonoBehaviour
         StartCoroutine(Jump());
     }
 
+    /// <summary>
+    /// The frog will jump eternally.
+    /// </summary>
+    /// <returns></returns> <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator Jump()
     {
         if(!isJumping && IsGrounded())
@@ -56,6 +63,10 @@ public class MainMenuFrog : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Detects if the frog is touching the ground to jump again.
+    /// </summary>
+    /// <returns></returns>
     private bool IsGrounded()
     {
         if(Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer))

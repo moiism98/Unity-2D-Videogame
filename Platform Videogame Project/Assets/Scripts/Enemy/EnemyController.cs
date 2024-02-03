@@ -61,10 +61,7 @@ public class EnemyController : MonoBehaviour
 
         audioManager = FindObjectOfType<AudioManager>();
 
-        if(fliped) 
-            this.SetDirection(1);
-        else 
-            this.SetDirection(-1);
+        SetStartDirection();
     }
 
     private void Update()
@@ -73,22 +70,15 @@ public class EnemyController : MonoBehaviour
 
         animator.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
 
-        if(gameController.GetGameMode().Equals(GameMode.bonus))
-        {
-            if(player.transform.position.y > hitPoint.transform.position.y)
-                hitPoint.SetActive(true);
-            else hitPoint.SetActive(false);
-        }
-
         HitPlayer();   
     }
 
     private void FixedUpdate()
     {
-        Move();
+        MoveEnemy();
     }
 
-    private void Move()
+    private void MoveEnemy()
     {
         switch(enemyAction)
         {
@@ -100,6 +90,11 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// This method will be triggered when the player kills an enemy by jumping on it.
+    /// We need the player's rigidbody to apply a bounce force on him.
+    /// </summary>
+    /// <param name="playerRb"></param>
     public void Die(Rigidbody2D playerRb)
     {
         playerRb.velocity = new Vector2(playerRb.velocity.x, this.GetBounceForce());
@@ -117,6 +112,9 @@ public class EnemyController : MonoBehaviour
         gameController.ShowEarnedScore(enemyScore, transform);
     }
 
+    /// <summary>
+    /// This method will be triggered whenever the player kills an enemy with arrows or crates.
+    /// </summary>
     public void Die()
     {
         Destroy(gameObject);
@@ -133,7 +131,7 @@ public class EnemyController : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculate a heart spawn probability when an enemy die.
+    /// Calculate a heart spawn probability on enemy death.
     /// </summary> <summary>
     /// 
     /// </summary>
@@ -149,11 +147,15 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// This method will take damage to the player whenever an enemy hits it.
+    /// It's going to trigger a coroutine, the player has an invulnerability time.
+    /// </summary>
     private void HitPlayer()
     {
         Collider2D player = null;
 
-        switch(damageCollider)
+        switch(damageCollider) // each enemy has his own damage collider based on its shape.
         {
             case DamageCollider.circle: player = Physics2D.OverlapCircle(transform.position, damagePointRadius, playerLayer); break;
             case DamageCollider.capsule: player = Physics2D.OverlapCapsule(transform.position, capsuleSize, capsuleDirection, 0f, playerLayer); break;
@@ -178,6 +180,12 @@ public class EnemyController : MonoBehaviour
     {
         rb.velocity = new Vector2(GetDirection() * GetMoveSpeed(), 0);
     }
+
+    /// <summary>
+    /// Apply a velocity on the enemy to make it move. This method is design for enemies which can jump.
+    /// </summary>
+    /// <param name="rb"></param>
+    /// <param name="jumpForce"></param>
     public void ApplyVelocity(Rigidbody2D rb, float jumpForce)
     {
         rb.velocity = new Vector2(GetDirection() * GetMoveSpeed(), jumpForce);
@@ -189,10 +197,12 @@ public class EnemyController : MonoBehaviour
     /// <returns></returns>
     public bool WallDetected(Transform checker, Vector2 checkerSize, LayerMask checkLayer)
     {
+        bool wall = false;
+
         if(checker != null && Physics2D.OverlapBox(checker.position, checkerSize, 0f, checkLayer))
-            return true;
-        else 
-            return false;
+            wall = true;
+        
+        return wall;
     }
 
     /// <summary>
@@ -201,10 +211,12 @@ public class EnemyController : MonoBehaviour
     /// <returns></returns>
     public bool GroundDetected(Transform checker, LayerMask checkLayer, float distance)
     {
+        bool ground = false;
+
         if(checker != null && Physics2D.Raycast(checker.position, Vector2.down, distance, checkLayer))
-            return true;
-        else 
-            return false;
+            ground = true;
+
+        return ground;
     }
 
     /// <summary>
@@ -223,6 +235,14 @@ public class EnemyController : MonoBehaviour
     public void ChangeEnemyDirection()
     {
         SetDirection(GetDirection() * -1);
+    }
+
+    private void SetStartDirection()
+    {
+        if(fliped) 
+            this.SetDirection(1);
+        else 
+            this.SetDirection(-1);
     }
 
     public void SetDirection(float direction)

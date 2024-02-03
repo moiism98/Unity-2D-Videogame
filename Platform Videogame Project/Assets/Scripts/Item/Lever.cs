@@ -57,6 +57,9 @@ public class Lever : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Triggers the lever which is going to display or hide his attached bridge.
+    /// </summary>
     public void Activate()
     {
         animator.SetTrigger("Activate");

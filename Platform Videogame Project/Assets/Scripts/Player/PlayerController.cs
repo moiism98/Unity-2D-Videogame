@@ -69,8 +69,6 @@ public class PlayerController : MonoBehaviour
         audioManager = FindObjectOfType<AudioManager>();
 
         health = maxHealth;
-
-        //SetPlayerSpawnPoint();
     }
 
     private void Update()
@@ -116,15 +114,10 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(new Vector2(-direction * jumpForce, Mathf.Abs(direction) * 1.5f), ForceMode2D.Impulse);
     }
 
-    public void SetPlayerSpawnPoint()
-    {
-        spawnPoint = GameObject.FindGameObjectWithTag("Spawn Point").transform;
-
-        if(spawnPoint != null)
-        {
-            gameObject.transform.position = spawnPoint.position;
-        }
-    }
+    /// <summary>
+    /// Makes the player move. (Input Action)
+    /// </summary>
+    /// <param name="walk"></param>
     public void Walk(InputAction.CallbackContext walk)
     {
         if(!isClimbing)
@@ -136,6 +129,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Makes the player run. (Input Action)
+    /// </summary>
+    /// <param name="run"></param>
     public void Run(InputAction.CallbackContext run)
     {
         if(gameController.gameMode.Equals(GameMode.bonus))
@@ -156,6 +153,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Makes the player jump and double jump. (Input Action)
+    /// </summary>
+    /// <param name="jump"></param>
     public void Jump(InputAction.CallbackContext jump)
     {
         if(gameController.gameMode.Equals(GameMode.bonus))
@@ -174,9 +175,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Makes the player crouch. (Input Action)
+    /// </summary>
+    /// <param name="crouch"></param>
     public void Crouch(InputAction.CallbackContext crouch)
     {
-        if(!isClimbing && !isHurt) // if we are not climbing we can crouch
+        if(!isClimbing && !isHurt) // if we are not climbing or hurts we can crouch
         {
             if(crouch.performed) // if we're pressing the crouch button.
             {
@@ -206,6 +211,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Allows the player jump under platforms. (Input Action)
+    /// </summary>
+    /// <param name="underPlatform"></param>
     public void UnderPlatform(InputAction.CallbackContext underPlatform)
     {
         /*
@@ -222,6 +231,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Move the player vertically to climb. (Input action)
+    /// After we had pressed the game action.
+    /// </summary>
+    /// <param name="climb"></param>
     public void Climb(InputAction.CallbackContext climb)
     {
         
@@ -283,7 +297,7 @@ public class PlayerController : MonoBehaviour
         if(Mathf.Abs(movement) > 0) // if we are moving we apply no friction on our player
             rb.sharedMaterial = noFriction;
         else
-            rb.sharedMaterial = antiSliding; // if we not, we apply high friction on our player to stop the sliding effect (he 'sticks' on the ground)
+            rb.sharedMaterial = antiSliding; // if we don't, we apply high friction on our player to stop the sliding effect (he 'sticks' on the ground)
     }
 
     private void CalculateGravity()
@@ -337,6 +351,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Disables the player's colliders to pass through the platforms.
+    /// Enables them again after a bit amount of time.
+    /// </summary>
+    /// <returns></returns> <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator JumpUnderPlatform() 
     {
 
@@ -360,6 +383,10 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Makes the player shoot an arrow. (Input Action)
+    /// </summary>
+    /// <param name="shoot"></param>
     public void Shoot(InputAction.CallbackContext shoot)
     {
         if(shoot.performed)
@@ -369,12 +396,20 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// It will cap the player's health to its max health.
+    /// </summary>
     private void CapPlayerHealth()
     {
         if(this.GetHealth() >= this.GetMaxHealth())
             this.SetHealth(this.GetMaxHealth());
     }
 
+    /// <summary>
+    /// Hurts the player and decrease its health based on the damage taken.
+    /// </summary>
+    /// <param name="damage"></param>
+    /// <returns></returns>
     public IEnumerator TakeDamage(int damage)
     {
         if(!isHurt)
@@ -393,11 +428,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Displays the game over menu when the player dies.
+    /// </summary>
     private void Die()
     {
         gameController.ShowGameOverMenu();
     }
 
+    /// <summary>
+    /// Spawns an arrow and throw it where the player is facing at.
+    /// </summary>
     private void ShootArrow()
     {
         GameController.isArrowReady = false;
@@ -407,32 +448,27 @@ public class PlayerController : MonoBehaviour
         Instantiate(arrowPrefab, shootPoint, arrowPrefab.transform.rotation);
 
         audioManager.PlaySound("Arrow");
-
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.white;
-
-        Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
-
-        Gizmos.DrawWireSphere(ceilingCheck.position, ceilingCheckRadius);
-
-        Gizmos.color = Color.red;
-
-        Gizmos.DrawWireSphere(transform.position, climbWallCheckRadius);
-    }
-
+    /// <summary>
+    /// Displays the run particles when the player is running.
+    /// </summary>
     private void PlayRunParticles()
     {
         runParticles.Play();
     }
 
+    /// <summary>
+    /// Hides the run particles when the player stops running.
+    /// </summary>
     private void StopRunParticles()
     {
         runParticles.Stop();
     }
 
+    /// <summary>
+    /// Displays the run particles when the player hits on the ground after jumping.
+    /// </summary>
     private void PlayJumpParticles()
     {
         jumpParticles.Play();
@@ -476,5 +512,18 @@ public class PlayerController : MonoBehaviour
     public int GetHealth()
     {
         return this.health;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.white;
+
+        Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
+
+        Gizmos.DrawWireSphere(ceilingCheck.position, ceilingCheckRadius);
+
+        Gizmos.color = Color.red;
+
+        Gizmos.DrawWireSphere(transform.position, climbWallCheckRadius);
     }
 }

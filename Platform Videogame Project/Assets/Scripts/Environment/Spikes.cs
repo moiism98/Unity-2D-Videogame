@@ -26,15 +26,16 @@ public class Spikes : MonoBehaviour
     
     private void FixedUpdate()
     {
-        MoveSpikes();
+        if(speed > 0)
+            MoveSpikes();
     }
 
     private void MoveSpikes()
     {
-        if(tilemapCol.IsTouchingLayers(spikesLimitLayer) && speed > 0)
+        if(tilemapCol.IsTouchingLayers(spikesLimitLayer))
             speed = 0;
-
-        rb.velocity = Vector2.up * speed;     
+        
+        rb.velocity = Vector2.up * speed;   
     }
 
     private void IncrementSpeed()
@@ -43,6 +44,9 @@ public class Spikes : MonoBehaviour
             StartCoroutine(IncrementSpikesSpeed());
     }
 
+    /// <summary>
+    /// Kills the player when collides with it.
+    /// </summary>
     private void KillPlayer()
     {
         if(tilemapCol.IsTouchingLayers(playerLayer))
@@ -53,6 +57,10 @@ public class Spikes : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Increments the spike wall's speed over the time.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator IncrementSpikesSpeed()
     {   
         if(!isIncresingSpeed)

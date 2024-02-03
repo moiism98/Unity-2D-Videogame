@@ -5,7 +5,7 @@ using UnityEngine;
 public class DinoBehaviour : MonoBehaviour
 {
     [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private float fieldOfVision = 3f;
+    [SerializeField] private float rangeVision = 3f;
     [SerializeField] private Transform[] checkers;
     [SerializeField] private Vector2 checkerSize;
     private EnemyController enemyController;
@@ -42,10 +42,14 @@ public class DinoBehaviour : MonoBehaviour
     {
         checkerInUse = enemyController.GetUsedChecker(checkers);
         
-        if(checkerInUse != null && Physics2D.Raycast(checkerInUse.position, new Vector2(enemyController.GetDirection(), 0f), fieldOfVision, playerLayer))
+        if(checkerInUse != null && Physics2D.Raycast(checkerInUse.position, new Vector2(enemyController.GetDirection(), 0f), rangeVision, playerLayer))
             SetPlayerDetected(true);
     }
     
+
+    /// <summary>
+    /// Moves the dinosaur. When a wall is detected it's stoped and turns around.
+    /// </summary>
     public void Move()
     {
         if(playerDetected)
