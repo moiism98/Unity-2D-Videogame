@@ -6,7 +6,7 @@
 > CREDITS TO ANSIMUZ MOST OF THE GAME ASSETS (SPRITES, ANIMATIONS AND AUDIO) ARE DESIGNED BY HIM ❤❤
 > https://linktr.ee/ansimuz
 >
-> SOUND EFFECTS from Zapsplat https://zapsplat.com
+> SOUND EFFECTS from Zapsplat https://zapsplat.com and Freesounds https://freesound.org
 
 > [!NOTE]
 > Git work states:
