@@ -489,6 +489,11 @@ public class PlayerController : MonoBehaviour
         this.health = health;
     }
 
+    public void SetIsHurt(bool isHurt)
+    {
+        this.isHurt = isHurt;
+    }
+
     public bool GetIsClimbing()
     {
         return this.isClimbing;

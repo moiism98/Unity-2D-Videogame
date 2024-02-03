@@ -10,7 +10,6 @@ public class GameController : MonoBehaviour
     [Header("Static variables")]
     private int stageID = 1;
     private int totalScore = 0;
-    private int levelScore = 0;
     private int sBonusScore;
     private int playerLifes;
 
@@ -41,7 +40,6 @@ public class GameController : MonoBehaviour
         [SerializeField] private TextMeshProUGUI transitionLifes;
         [HideInInspector] public TextMeshProUGUI currentStageText;
         [HideInInspector] public TextMeshProUGUI lastStageText;
-        // private bool transitionLoaded = false;
 
         [Header("Pause UI")]
         [SerializeField] GameObject pauseScreen;
@@ -115,17 +113,6 @@ public class GameController : MonoBehaviour
         FruitsForLifes();
 
         UpdateScore();
-
-        /*if(gameMode.Equals(GameMode.bonus) && !transitionLoaded)
-        {
-            transitionLoaded = true;
-
-            bonusTransitionScreen.SetActive(true);
-
-            Invoke("StopTransition", transitionTime);
-
-            Debug.Log(scoreText.text);
-        }*/
     }
 
     /// <summary>
@@ -135,9 +122,7 @@ public class GameController : MonoBehaviour
     {
         GameObject level = GameObject.FindGameObjectWithTag("Level");
 
-        //GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-        if(level != null) // if we found a level and a player we destroy them to load a new ones!
+        if(level != null) // if we found a level we destroy it to load a new one!
         {
             Destroy(level);
         }
@@ -163,6 +148,10 @@ public class GameController : MonoBehaviour
         DisableEnemyHitPoint(); // this is only for the regular game mode!
 
         SetPlayer();
+
+        keysCollected = 0;
+
+        levelComplete = false;
     }
 
     /// <summary>
@@ -198,7 +187,7 @@ public class GameController : MonoBehaviour
 
             // if we don't delay it, the spawn position still being the last one, we have to wait for the game to instantiate the new stage first, then take it's spawn point!
 
-            Invoke("MovePlayer", .01f); 
+            Invoke("MovePlayer", .01f);
         }
         else
             SpawnPlayer();
@@ -304,10 +293,6 @@ public class GameController : MonoBehaviour
 
                     stageID++;
 
-                    levelComplete = false;
-
-                    keysCollected = 0;
-
                     LoadStage();
 
                     Time.timeScale = 0.0f;
@@ -331,15 +316,15 @@ public class GameController : MonoBehaviour
     }
 
     /// <summary>
-    /// Reload the current level the player is playing and where he dies in, resets the current levels score earned and put everything back in place again.
+    /// Reloads the current level where the player is playing and dies in, resets the current levels score earned and put everything back in place again.
     /// </summary> <summary>
     /// 
     /// </summary>
     private void ReloadLevel()
-    {
-        Destroy(GameObject.FindGameObjectWithTag("Player"));
-
+    { 
         isGameOver = !isGameOver;
+
+        audioManager.StopSound("Game Over");
 
         SetInitalUI();
 
@@ -347,11 +332,9 @@ public class GameController : MonoBehaviour
 
         LoadStage();
 
+        playerController.SetHealth(playerController.GetMaxHealth());
+
         SetPlayerHealth();
-
-        totalScore -= levelScore;
-
-        levelScore = 0;
 
         StartCoroutine(ResetTimeScale());
     }
@@ -399,6 +382,8 @@ public class GameController : MonoBehaviour
                 transitionScreen.SetActive(false);
 
                 audioManager.PlaySound(GetStageAudioClip());
+
+                playerController.SetIsHurt(false);
 
             break;
 
@@ -504,8 +489,6 @@ public class GameController : MonoBehaviour
     {
         totalScore = int.Parse(scoreText.text) + score;
 
-        levelScore = totalScore;
-
         yield return new WaitForSeconds(.1f);
     }
     
@@ -582,7 +565,8 @@ public class GameController : MonoBehaviour
     /// <param name="health"></param>
     private void HealPlayer(int health) // this method has to call a coroutine, player is healing sometimes twice with a single heart!
     {
-        StartCoroutine(HealCoroutine(health));
+        if(this != null)
+            StartCoroutine(HealCoroutine(health));
     }
 
     /// <summary>

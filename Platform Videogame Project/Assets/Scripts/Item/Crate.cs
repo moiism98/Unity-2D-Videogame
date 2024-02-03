@@ -23,7 +23,7 @@ public class Crate : MonoBehaviour
     /// </summary>
     private void HitEnemy()
     {
-        if(rb.velocity.x > 0 || rb.velocity.y > 0) // the crate only can damage the enemies when its moving.
+        if(Mathf.Abs(rb.velocity.x) > 0) // the crate only can damage the enemies when its moving.
         {
             Collider2D collision = Physics2D.OverlapBox(transform.position, enemydetectorSize, 0, enemyLayer);
             
