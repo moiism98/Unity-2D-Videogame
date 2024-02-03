@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class FrogBehaviour : MonoBehaviour
 {
+    private AudioManager audioManager;
     private EnemyController enemyController;
     private Animator animator;
     private Rigidbody2D frogRb;
@@ -11,11 +12,14 @@ public class FrogBehaviour : MonoBehaviour
     [SerializeField] private Vector2 groundCheckSize;
     [SerializeField] private float jumpForce = 5f;
     private bool moveComplete;
+    private bool croac = false;
 
     [Header("Timers")]
     [SerializeField] private float stopMove = 1.5f;
     void Start()
     {
+        audioManager = FindObjectOfType<AudioManager>();
+
         enemyController = GetComponent<EnemyController>();
 
         frogRb = GetComponent<Rigidbody2D>();
@@ -28,6 +32,8 @@ public class FrogBehaviour : MonoBehaviour
     public void Update()
     {
         animator.SetFloat("Fall", frogRb.velocity.y);
+
+        StartCoroutine(FrogCroac());
     }
 
     public IEnumerator Move()
@@ -40,6 +46,8 @@ public class FrogBehaviour : MonoBehaviour
 
             animator.SetTrigger("Jump");
 
+            audioManager.PlaySound("Frog Jump");
+
             yield return new WaitForSeconds(stopMove);
 
             enemyController.ChangeEnemyDirection();
@@ -49,6 +57,24 @@ public class FrogBehaviour : MonoBehaviour
             animator.SetTrigger("Jump");
 
             moveComplete = true;
+        }
+    }
+
+    /// <summary>
+    /// Plays the frog crac sound every X amount of seconds. (2 seconds works well)
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator FrogCroac()
+    {
+        if(!croac)
+        {
+            croac = true;
+
+            audioManager.PlaySound("Frog Croac");
+
+            yield return new WaitForSeconds(2.0f);
+
+            croac = false;
         }
     }
 

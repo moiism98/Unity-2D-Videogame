@@ -51,12 +51,15 @@ public class EnemyController : MonoBehaviour
     [Header("Animations")]
     [SerializeField] private Animator animator;
     private PlayerController player;
+    private AudioManager audioManager;
 
     private void Start()
     {
         gameController = FindObjectOfType<GameController>();
 
         player = FindObjectOfType<PlayerController>();
+
+        audioManager = FindObjectOfType<AudioManager>();
 
         if(fliped) 
             this.SetDirection(1);
@@ -105,6 +108,8 @@ public class EnemyController : MonoBehaviour
 
         Instantiate(dieAnimation, transform.position, Quaternion.identity);
 
+        audioManager.PlaySound("Enemy Dead");
+
         DropHeart();
 
         OnEnemyDie.Invoke(enemyScore);
@@ -117,6 +122,8 @@ public class EnemyController : MonoBehaviour
         Destroy(gameObject);
 
         Instantiate(dieAnimation, transform.position, Quaternion.identity);
+
+        audioManager.PlaySound("Enemy Death");
 
         DropHeart();
 

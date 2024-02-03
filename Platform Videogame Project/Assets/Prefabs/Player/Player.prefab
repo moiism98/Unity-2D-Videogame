@@ -379,7 +379,7 @@ MonoBehaviour:
   moveSpeed: 3
   runSpeed: 6
   crouchSpeed: 2
-  maxHealth: 1
+  maxHealth: 3
   jumpForce: 18
   doubleJumpForce: 2.5
   groundLayer:

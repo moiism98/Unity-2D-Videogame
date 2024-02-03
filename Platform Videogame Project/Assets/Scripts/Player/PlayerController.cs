@@ -58,12 +58,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private ParticleSystem runParticles;
     [SerializeField] private ParticleSystem jumpParticles;
     private bool activateLandingParticles = false;
-    private GameController gameController;
     private Transform spawnPoint;
+    private GameController gameController;
+    private AudioManager audioManager;
 
     private void Start()
     {
         gameController = FindObjectOfType<GameController>();
+
+        audioManager = FindObjectOfType<AudioManager>();
 
         health = maxHealth;
 
@@ -135,33 +138,39 @@ public class PlayerController : MonoBehaviour
 
     public void Run(InputAction.CallbackContext run)
     {
-        if(run.performed) // if we running we flip the run boolean which by default it's false.
+        if(gameController.gameMode.Equals(GameMode.bonus))
         {
-            if(Mathf.Abs(movement) > 0 && !isCrouching)
-                PlayRunParticles();
+            if(run.performed) // if we running we flip the run boolean which by default it's false.
+            {
+                if(Mathf.Abs(movement) > 0 && !isCrouching)
+                    PlayRunParticles();
 
-            isRunning = !isRunning;
-        }
-        else if(run.canceled) // when we stop running we flip again the boolean now from true to false.
-        {
-            isRunning = !isRunning;
-        
-            StopRunParticles();
+                isRunning = !isRunning;
+            }
+            else if(run.canceled) // when we stop running we flip again the boolean now from true to false.
+            {
+                isRunning = !isRunning;
+            
+                StopRunParticles();
+            }
         }
     }
 
     public void Jump(InputAction.CallbackContext jump)
     {
-        if(jumps < totalJumps && !isCrouching) // we only can jump if we have jumps remaining and we are not crouching !
+        if(gameController.gameMode.Equals(GameMode.bonus))
         {
-            if(jump.performed && !isHurt) // normal jump
-                ApplyJumpForce(jumpForce);
-            else if(jump.canceled)
-                ApplyJumpForce(doubleJumpForce);
+            if(jumps < totalJumps && !isCrouching) // we only can jump if we have jumps remaining and we are not crouching !
+            {
+                if(jump.performed && !isHurt) // normal jump
+                    ApplyJumpForce(jumpForce);
+                else if(jump.canceled)
+                    ApplyJumpForce(doubleJumpForce);
 
-            // if we are in the air, we are prepare to play the landing particles
+                // if we are in the air, we are prepare to play the landing particles
 
-            activateLandingParticles = !activateLandingParticles;     
+                activateLandingParticles = !activateLandingParticles;     
+            }
         }
     }
 
@@ -396,6 +405,8 @@ public class PlayerController : MonoBehaviour
         Vector2 shootPoint = new Vector2(transform.position.x, transform.position.y - .5f);
         
         Instantiate(arrowPrefab, shootPoint, arrowPrefab.transform.rotation);
+
+        audioManager.PlaySound("Arrow");
 
     }
 

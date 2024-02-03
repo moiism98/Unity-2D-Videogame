@@ -1,0 +1,113 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6720189440858494872
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8858808474513481493}
+  - component: {fileID: 7698328372576493899}
+  m_Layer: 0
+  m_Name: AudioController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8858808474513481493
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6720189440858494872}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7698328372576493899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6720189440858494872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0df714cd8bd10c94c9928f491870ab76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioMixer: {fileID: 24100000, guid: ee9e2284dfdce7f4bbe3eba786501204, type: 2}
+  sounds:
+  - clip: {fileID: 8300000, guid: 57f12d84ebf04324e92e37dc70ac26b1, type: 3}
+    clipName: Main Menu
+    volume: 0.5
+    pitch: 1
+    loop: 1
+  - clip: {fileID: 8300000, guid: b6dc04f2884eb5b46b675390b1e75e84, type: 3}
+    clipName: Stage 1
+    volume: 0.5
+    pitch: 1
+    loop: 1
+  - clip: {fileID: 8300000, guid: 6979d52fda0579441a2122b95abaf337, type: 3}
+    clipName: Stage 2
+    volume: 0.5
+    pitch: 1
+    loop: 1
+  - clip: {fileID: 8300000, guid: 596e0f53d0760684897f73aa6d85324a, type: 3}
+    clipName: Stage 3
+    volume: 0.5
+    pitch: 1
+    loop: 1
+  - clip: {fileID: 8300000, guid: 3ea56f5862b5ab94a8f9ded68ac5ff10, type: 3}
+    clipName: Gem
+    volume: 1
+    pitch: 1
+    loop: 0
+  - clip: {fileID: 8300000, guid: ca8e85fcb6b7ffa44879a7e891bb3014, type: 3}
+    clipName: Heart, fruit and arrow
+    volume: 2
+    pitch: 1
+    loop: 0
+  - clip: {fileID: 8300000, guid: 8021f6361a1582643bfd6a3d70b7e87e, type: 3}
+    clipName: Arrow
+    volume: 1
+    pitch: 1
+    loop: 0
+  - clip: {fileID: 8300000, guid: b0d96c59c22203a4dac4106015c342e6, type: 3}
+    clipName: Enemy Death
+    volume: 1
+    pitch: 1
+    loop: 0
+  - clip: {fileID: 8300000, guid: 2fe397fe64f040e449c563039af3608e, type: 3}
+    clipName: Frog Croac
+    volume: 1.5
+    pitch: 1
+    loop: 0
+  - clip: {fileID: 8300000, guid: 1807dfde590a1fa4cbacc15378608d7c, type: 3}
+    clipName: Frog Jump
+    volume: 1
+    pitch: 1
+    loop: 0
+  - clip: {fileID: 8300000, guid: ec26970ca0f517a46bcc3c5f720ee97f, type: 3}
+    clipName: Game Over
+    volume: 0.5
+    pitch: 1
+    loop: 0
+  - clip: {fileID: 8300000, guid: d5803a1bce16ab64280c4bd515a74ab7, type: 3}
+    clipName: Key
+    volume: 1
+    pitch: 1
+    loop: 0
+  - clip: {fileID: 8300000, guid: d7afdf5f7fe679442a103615bc71d66e, type: 3}
+    clipName: Lever
+    volume: 1.25
+    pitch: 1
+    loop: 0

@@ -14,6 +14,7 @@ public class MenuController : MonoBehaviour
 
     private GameController gameController;
     private DeviceController deviceController;
+    private AudioManager audioManager;
     
     private void Start()
     {
@@ -21,11 +22,15 @@ public class MenuController : MonoBehaviour
 
         deviceController = FindObjectOfType<DeviceController>();
 
+        audioManager = FindObjectOfType<AudioManager>();
+
         if(scene.Equals(Scene.main))
         {
             menu.SetActive(false);
 
             controlsMenu.SetActive(false);
+
+            audioManager.PlaySound("Main Menu");
         }
     }
 

@@ -68,12 +68,13 @@ public class GameController : MonoBehaviour
         [Header("Keys")]
         [HideInInspector] public TextMeshProUGUI keysText;
         public static int keysCollected = 0;
-        public static int keysToCollect = 1; // 5 keys
+        public static int keysToCollect = 5; // 5 keys
     public static bool isArrowReady = false;
 
     [Header("Controllers")]
     private PlayerController playerController;
     private DeviceController deviceController;
+    private AudioManager audioManager;
 
     [Header("Climb variables")]
     private Ladder ladder;
@@ -89,6 +90,8 @@ public class GameController : MonoBehaviour
         playerController = FindObjectOfType<PlayerController>();
 
         deviceController = FindObjectOfType<DeviceController>();
+        
+        audioManager = FindObjectOfType<AudioManager>();
 
         StartCoroutine(ResetTimeScale());
 
@@ -99,8 +102,6 @@ public class GameController : MonoBehaviour
         // we suscribe the method to the game events
 
         GameEvents();
-
-        DisableEnemyHitPoint(); // this is only for the regular game mode!
     }
     
     private void Update()
@@ -134,13 +135,11 @@ public class GameController : MonoBehaviour
     {
         GameObject level = GameObject.FindGameObjectWithTag("Level");
 
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        //GameObject player = GameObject.FindGameObjectWithTag("Player");
 
         if(level != null) // if we found a level and a player we destroy them to load a new ones!
         {
             Destroy(level);
-        
-            Destroy(player);
         }
 
         GameObject stage = null;
@@ -161,11 +160,9 @@ public class GameController : MonoBehaviour
         if(stage != null) // if we've found the correspondant stage, we instantiate it!
             Instantiate(stage, transform.position, Quaternion.identity);
         
-        // and finally spawn a player again
+        DisableEnemyHitPoint(); // this is only for the regular game mode!
 
-        Transform spawnPoint = GameObject.FindGameObjectWithTag("Spawn Point").transform;
-
-        Instantiate(selectedLevel.GetPlayer(), spawnPoint.position, Quaternion.identity);
+        SetPlayer();
     }
 
     /// <summary>
@@ -181,7 +178,56 @@ public class GameController : MonoBehaviour
         if(stage != null)
             currentStageText.text = stage.GetIndex().ToString();
 
+        currentStage = stage;
+
         return stage;
+    }
+
+    /// <summary>
+    /// This method move the player to the correspondant stage's spawn point or spawn the player only when the game starts!
+    /// </summary> <summary>
+    /// 
+    /// </summary>
+    private void SetPlayer()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+        if(player != null)
+        {
+            // we delay the method so the stage can spawn and then move the player to the spawn point (stage's start position)
+
+            // if we don't delay it, the spawn position still being the last one, we have to wait for the game to instantiate the new stage first, then take it's spawn point!
+
+            Invoke("MovePlayer", .01f); 
+        }
+        else
+            SpawnPlayer();
+    }
+
+    /// <summary>
+    /// Spawns the player when the game starts.
+    /// </summary>
+    private void SpawnPlayer()
+    {
+        Transform spawnPoint = GameObject.FindGameObjectWithTag("Spawn Point").transform;
+
+        Instantiate(selectedLevel.GetPlayer(), spawnPoint.position, Quaternion.identity);
+    }
+
+    /// <summary>
+    /// Move the player on the next stage's start position.
+    /// </summary> <summary>
+    /// 
+    /// </summary>
+    private void MovePlayer()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+        Transform spawnPoint = GameObject.FindGameObjectWithTag("Spawn Point").transform;
+
+        if(player != null)
+            player.transform.position = spawnPoint.position;
+            
     }
 
     private void SetInitalUI()
@@ -204,6 +250,9 @@ public class GameController : MonoBehaviour
         fruits = 0;
     }
 
+    /// <summary>
+    /// Load the first stage of the first array's level. This only happens at the game's start.
+    /// </summary>
     private void LoadInitialStage()
     {
         selectedLevel = Array.Find(levels, level => level.GetName().Equals(levelName));
@@ -229,6 +278,11 @@ public class GameController : MonoBehaviour
         EnemyController.OnEnemyDie += IncreseScore;
     }
 
+    /// <summary>
+    /// Loads the next stage of the current level.
+    /// </summary> <summary>
+    /// 
+    /// </summary>
     public void LoadNextStage()
     {
         switch(gameMode)
@@ -246,7 +300,13 @@ public class GameController : MonoBehaviour
                         SceneManager.LoadScene("MainScene");
                     }
 
+                    audioManager.StopSound(GetStageAudioClip());
+
                     stageID++;
+
+                    levelComplete = false;
+
+                    keysCollected = 0;
 
                     LoadStage();
 
@@ -284,8 +344,6 @@ public class GameController : MonoBehaviour
         SetInitalUI();
 
         arrow.SetActive(false);
-
-        //SelectStage();
 
         LoadStage();
 
@@ -336,7 +394,13 @@ public class GameController : MonoBehaviour
     { 
         switch(gameMode)
         {
-            case GameMode.regular: transitionScreen.SetActive(false); break;
+            case GameMode.regular: 
+
+                transitionScreen.SetActive(false);
+
+                audioManager.PlaySound(GetStageAudioClip());
+
+            break;
 
             case GameMode.bonus: 
 
@@ -382,17 +446,30 @@ public class GameController : MonoBehaviour
             deviceController.UpdateGameActions("Player");
         }
     }
+
+    /// <summary>
+    /// Shows the 'Game Over' screen.
+    /// </summary>
     public void ShowGameOverMenu()
     {
         Time.timeScale = 0.0f;
 
         gameOverScreen.SetActive(true);
 
+        audioManager.StopSound(GetStageAudioClip());
+
+        audioManager.PlaySound("Game Over");
+
         isGameOver = true;
 
         playerLifes--;
     }
 
+    /// <summary>
+    /// Sets everything related with the score (keys, player lifes, score...)
+    /// </summary> <summary>
+    /// 
+    /// </summary>
     private void UpdateScore()
     {
         keysText.text = keysCollected.ToString();
@@ -406,10 +483,6 @@ public class GameController : MonoBehaviour
         transitionLifes.text = playerLifes.ToString();
 
         transitionScore.text = "Score: " + scoreText.text;
-
-        /*Debug.Log("Total score: " + totalScore);
-
-        Debug.Log("Level score: " + levelScore);*/
     }
 
     /// <summary>
@@ -512,6 +585,15 @@ public class GameController : MonoBehaviour
         StartCoroutine(HealCoroutine(health));
     }
 
+    /// <summary>
+    /// Waits an amount of seconds for player's heal preventing him healing twice.
+    /// </summary>
+    /// <param name="health"></param>
+    /// <returns></returns> <summary>
+    /// 
+    /// </summary>
+    /// <param name="health"></param>
+    /// <returns></returns>
     private IEnumerator HealCoroutine(int health)
     {
         if(!isHealing)
@@ -626,6 +708,11 @@ public class GameController : MonoBehaviour
     public Ladder GetLadder()
     {
         return this.ladder;
+    }
+
+    public string GetStageAudioClip()
+    {
+        return currentStage.GetStage().name;
     }
 
     public void SetGameAction(GameAction action)

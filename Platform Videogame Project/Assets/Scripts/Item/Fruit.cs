@@ -7,10 +7,13 @@ public class Fruit : MonoBehaviour, ItemInterface
     [SerializeField] private int fruitScore = 200;
     [SerializeField] private GameObject collectAnimation;
     private GameController gameController;
+    private AudioManager audioManager;
 
     private void Start()
     {
         gameController = FindObjectOfType<GameController>();
+
+        audioManager = FindObjectOfType<AudioManager>();
     }
 
     public void Collect()
@@ -22,5 +25,7 @@ public class Fruit : MonoBehaviour, ItemInterface
         gameController.ShowEarnedScore(fruitScore, transform);
 
         Destroy(gameObject);
+
+        audioManager.PlaySound("Heart, fruit and arrow");
     }
 }

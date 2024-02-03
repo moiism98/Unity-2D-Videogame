@@ -4,6 +4,7 @@ public class Lever : MonoBehaviour
 {
     private DeviceController deviceController;
     private GameController gameController;
+    private AudioManager audioManager;
     private Collider2D col;
     private Animator animator;
     [SerializeField] private Animator actionAnimator;
@@ -16,6 +17,8 @@ public class Lever : MonoBehaviour
         deviceController = FindObjectOfType<DeviceController>();
 
         gameController = FindObjectOfType<GameController>();
+
+        audioManager = FindObjectOfType<AudioManager>();
 
         col = GetComponent<Collider2D>();
 
@@ -57,6 +60,8 @@ public class Lever : MonoBehaviour
     public void Activate()
     {
         animator.SetTrigger("Activate");
+
+        audioManager.PlaySound("Lever");
 
         col.enabled = false;
 
